@@ -1,0 +1,733 @@
+/home/l/liuxiao/anaconda3/envs/smc/lib/python3.8/site-packages/torch/cuda/__init__.py:52: UserWarning: CUDA initialization: The NVIDIA driver on your system is too old (found version 10010). Please update your GPU driver by downloading and installing a new version from the URL: http://www.nvidia.com/Download/index.aspx Alternatively, go to: https://pytorch.org to install a PyTorch version that has been compiled with your version of the CUDA driver. (Triggered internally at  /opt/conda/conda-bld/pytorch_1623448234945/work/c10/cuda/CUDAFunctions.cpp:115.)
+  return torch._C._cuda_getDeviceCount() > 0
+using  cpu
+Traceback (most recent call last):
+  File "main.py", line 7, in <module>
+    main()
+  File "main.py", line 4, in main
+    train()
+  File "/home/l/liuxiao/CS5446_Project/my-works/imitation_learning/train.py", line 56, in train
+    obses, samples = create_dataset_from_json(episode_dir)
+  File "/home/l/liuxiao/CS5446_Project/my-works/imitation_learning/dataloader.py", line 30, in create_dataset_from_json
+    with open(fp, 'r') as f:
+FileNotFoundError: [Errno 2] No such file or directory: '27876807.json'
+/home/l/liuxiao/anaconda3/envs/smc/lib/python3.8/site-packages/torch/cuda/__init__.py:52: UserWarning: CUDA initialization: The NVIDIA driver on your system is too old (found version 10010). Please update your GPU driver by downloading and installing a new version from the URL: http://www.nvidia.com/Download/index.aspx Alternatively, go to: https://pytorch.org to install a PyTorch version that has been compiled with your version of the CUDA driver. (Triggered internally at  /opt/conda/conda-bld/pytorch_1623448234945/work/c10/cuda/CUDAFunctions.cpp:115.)
+  return torch._C._cuda_getDeviceCount() > 0
+using  cpu
+obses: 133664 samples: 1191535
+north: 270058
+south: 281555
+west : 302862
+east : 287825
+bcity: 49235
+Traceback (most recent call last):
+  File "main.py", line 7, in <module>
+    main()
+  File "main.py", line 4, in main
+    train()
+  File "/home/l/liuxiao/CS5446_Project/my-works/imitation_learning/train.py", line 83, in train
+    train_model(model, dataloaders_dict, criterion, optimizer, num_epochs=15)
+TypeError: train_model() missing 1 required positional argument: 'device'
+using  cuda
+obses: 132822 samples: 1222173
+north: 289693
+south: 284994
+west : 296865
+east : 302619
+bcity: 48002
+Epoch 1/15 | train | Loss: 1.0004 | Acc: 0.5719
+Epoch 1/15 |  val  | Loss: 0.9358 | Acc: 0.6045
+Traceback (most recent call last):
+  File "main.py", line 7, in <module>
+    main()
+  File "main.py", line 4, in main
+    train()
+  File "/home/l/liuxiao/CS5446_Project/my-works/imitation_learning/train.py", line 83, in train
+    train_model(model, dataloaders_dict, criterion, optimizer, num_epochs=15, device=device)
+  File "/home/l/liuxiao/CS5446_Project/my-works/imitation_learning/train.py", line 29, in train_model
+    policy = model(states)
+  File "/home/l/liuxiao/anaconda3/envs/luxai/lib/python3.7/site-packages/torch/nn/modules/module.py", line 727, in _call_impl
+    result = self.forward(*input, **kwargs)
+  File "/home/l/liuxiao/CS5446_Project/my-works/imitation_learning/model.py", line 29, in forward
+    h = F.relu_(self.conv0(x))
+  File "/home/l/liuxiao/anaconda3/envs/luxai/lib/python3.7/site-packages/torch/nn/modules/module.py", line 727, in _call_impl
+    result = self.forward(*input, **kwargs)
+  File "/home/l/liuxiao/CS5446_Project/my-works/imitation_learning/model.py", line 16, in forward
+    h = self.conv(x)
+  File "/home/l/liuxiao/anaconda3/envs/luxai/lib/python3.7/site-packages/torch/nn/modules/module.py", line 727, in _call_impl
+    result = self.forward(*input, **kwargs)
+  File "/home/l/liuxiao/anaconda3/envs/luxai/lib/python3.7/site-packages/torch/nn/modules/conv.py", line 423, in forward
+    return self._conv_forward(input, self.weight)
+  File "/home/l/liuxiao/anaconda3/envs/luxai/lib/python3.7/site-packages/torch/nn/modules/conv.py", line 420, in _conv_forward
+    self.padding, self.dilation, self.groups)
+RuntimeError: Input type (torch.cuda.FloatTensor) and weight type (torch.FloatTensor) should be the same
+using  cuda
+obses: 66443 samples: 616862
+north: 141519
+south: 145564
+west : 148028
+east : 157391
+bcity: 24360
+Epoch 1/15 | train | Loss: 1.0446 | Acc: 0.5485
+Epoch 1/15 |  val  | Loss: 0.9721 | Acc: 0.5849
+Traceback (most recent call last):
+  File "main.py", line 7, in <module>
+    main()
+  File "main.py", line 4, in main
+    train()
+  File "/home/l/liuxiao/CS5446_Project/my-works/imitation_learning/train.py", line 83, in train
+    train_model(model, dataloaders_dict, criterion, optimizer, num_epochs=15, device=device)
+  File "/home/l/liuxiao/CS5446_Project/my-works/imitation_learning/train.py", line 29, in train_model
+    policy = model(states)
+  File "/home/l/liuxiao/anaconda3/envs/luxai/lib/python3.7/site-packages/torch/nn/modules/module.py", line 727, in _call_impl
+    result = self.forward(*input, **kwargs)
+  File "/home/l/liuxiao/CS5446_Project/my-works/imitation_learning/model.py", line 29, in forward
+    h = F.relu_(self.conv0(x))
+  File "/home/l/liuxiao/anaconda3/envs/luxai/lib/python3.7/site-packages/torch/nn/modules/module.py", line 727, in _call_impl
+    result = self.forward(*input, **kwargs)
+  File "/home/l/liuxiao/CS5446_Project/my-works/imitation_learning/model.py", line 16, in forward
+    h = self.conv(x)
+  File "/home/l/liuxiao/anaconda3/envs/luxai/lib/python3.7/site-packages/torch/nn/modules/module.py", line 727, in _call_impl
+    result = self.forward(*input, **kwargs)
+  File "/home/l/liuxiao/anaconda3/envs/luxai/lib/python3.7/site-packages/torch/nn/modules/conv.py", line 423, in forward
+    return self._conv_forward(input, self.weight)
+  File "/home/l/liuxiao/anaconda3/envs/luxai/lib/python3.7/site-packages/torch/nn/modules/conv.py", line 420, in _conv_forward
+    self.padding, self.dilation, self.groups)
+RuntimeError: Input type (torch.cuda.FloatTensor) and weight type (torch.FloatTensor) should be the same
+using  cuda
+obses: 13463 samples: 126403
+north: 31525
+south: 27421
+west : 32425
+east : 30210
+bcity: 4822 
+
+Epoch 15/15 |  val  | Loss: 0.9049 | Acc: 0.6377
+usage: main.py [-h] [--batch_size BATCH_SIZE] [--lr LR] [--epoch EPOCH]
+               [--save_every SAVE_EVERY] [--load_prop LOAD_PROP]
+               [--load_last_ckpt LOAD_LAST_CKPT]
+               [--last_ckpt_dir LAST_CKPT_DIR]
+main.py: error: unrecognized arguments: --data_prop 1.0
+using  cuda
+Traceback (most recent call last):
+  File "main.py", line 24, in <module>
+    main(vars(config))
+  File "main.py", line 20, in main
+    train(config)
+  File "/home/l/liuxiao/CS5446_Project/my-works/imitation_learning/train.py", line 85, in train
+    obses, samples = create_dataset_from_json(episode_dir, load_prop=load_prop)
+  File "/home/l/liuxiao/CS5446_Project/my-works/imitation_learning/dataloader.py", line 57, in create_dataset_from_json
+    for action in actions:
+TypeError: 'NoneType' object is not iterable
+using  cuda
+
+obses: 1242207 samples: 12135807
+north: 2823989
+south: 2830677
+west : 3018519
+east : 2969921
+bcity: 492701
+Epoch 1/30 | train | Loss: 0.9122 | Acc: 0.6150
+Epoch 1/30 |  val  | Loss: 0.8812 | Acc: 0.6291
+Epoch 2/30 | train | Loss: 0.8674 | Acc: 0.6353
+Epoch 2/30 |  val  | Loss: 0.8552 | Acc: 0.6406
+Epoch 3/30 | train | Loss: 0.8560 | Acc: 0.6404
+Epoch 3/30 |  val  | Loss: 0.8456 | Acc: 0.6448
+Epoch 4/30 | train | Loss: 0.8500 | Acc: 0.6429
+Epoch 4/30 |  val  | Loss: 0.8422 | Acc: 0.6462
+Epoch 5/30 | train | Loss: 0.8460 | Acc: 0.6446
+Epoch 5/30 |  val  | Loss: 0.8483 | Acc: 0.6438
+Epoch 6/30 | train | Loss: 0.8437 | Acc: 0.6459
+Epoch 6/30 |  val  | Loss: 0.8399 | Acc: 0.6480
+Epoch 7/30 | train | Loss: 0.8417 | Acc: 0.6467
+Epoch 7/30 |  val  | Loss: 0.8403 | Acc: 0.6468
+Epoch 8/30 | train | Loss: 0.8403 | Acc: 0.6474
+Epoch 8/30 |  val  | Loss: 0.8418 | Acc: 0.6463
+Epoch 9/30 | train | Loss: 0.8394 | Acc: 0.6478
+Epoch 9/30 |  val  | Loss: 0.8400 | Acc: 0.6470
+Epoch 10/30 | train | Loss: 0.8386 | Acc: 0.6483
+Epoch 10/30 |  val  | Loss: 0.8377 | Acc: 0.6480
+Epoch 11/30 | train | Loss: 0.8380 | Acc: 0.6483
+Epoch 11/30 |  val  | Loss: 0.8315 | Acc: 0.6515
+Epoch 12/30 | train | Loss: 0.8374 | Acc: 0.6488
+Epoch 12/30 |  val  | Loss: 0.8363 | Acc: 0.6487
+Epoch 13/30 | train | Loss: 0.8371 | Acc: 0.6487
+Epoch 13/30 |  val  | Loss: 0.8322 | Acc: 0.6508
+Epoch 14/30 | train | Loss: 0.8365 | Acc: 0.6490
+Epoch 14/30 |  val  | Loss: 0.8355 | Acc: 0.6496
+Epoch 15/30 | train | Loss: 0.8362 | Acc: 0.6492
+Epoch 15/30 |  val  | Loss: 0.8375 | Acc: 0.6484
+Epoch 16/30 | train | Loss: 0.8357 | Acc: 0.6495
+Epoch 16/30 |  val  | Loss: 0.8392 | Acc: 0.6473
+Epoch 17/30 | train | Loss: 0.8355 | Acc: 0.6496
+Epoch 17/30 |  val  | Loss: 0.8319 | Acc: 0.6515
+Epoch 18/30 | train | Loss: 0.8352 | Acc: 0.6498
+Epoch 18/30 |  val  | Loss: 0.8332 | Acc: 0.6500
+Epoch 19/30 | train | Loss: 0.8348 | Acc: 0.6499
+Epoch 19/30 |  val  | Loss: 0.8321 | Acc: 0.6506
+Epoch 20/30 | train | Loss: 0.8346 | Acc: 0.6500
+Epoch 20/30 |  val  | Loss: 0.8354 | Acc: 0.6503
+Epoch 21/30 | train | Loss: 0.8343 | Acc: 0.6502
+Epoch 21/30 |  val  | Loss: 0.8321 | Acc: 0.6513
+Epoch 22/30 | train | Loss: 0.8340 | Acc: 0.6503
+Epoch 22/30 |  val  | Loss: 0.8350 | Acc: 0.6501
+Epoch 23/30 | train | Loss: 0.8338 | Acc: 0.6504
+Epoch 23/30 |  val  | Loss: 0.8320 | Acc: 0.6510
+Epoch 24/30 | train | Loss: 0.8337 | Acc: 0.6504
+Epoch 24/30 |  val  | Loss: 0.8306 | Acc: 0.6523
+Epoch 25/30 | train | Loss: 0.8337 | Acc: 0.6503
+Epoch 25/30 |  val  | Loss: 0.8325 | Acc: 0.6514
+Epoch 26/30 | train | Loss: 0.8335 | Acc: 0.6505
+Epoch 26/30 |  val  | Loss: 0.8291 | Acc: 0.6521
+Epoch 27/30 | train | Loss: 0.8333 | Acc: 0.6506
+Epoch 27/30 |  val  | Loss: 0.8314 | Acc: 0.6521
+Epoch 28/30 | train | Loss: 0.8332 | Acc: 0.6508
+Epoch 28/30 |  val  | Loss: 0.8361 | Acc: 0.6496
+Epoch 29/30 | train | Loss: 0.8331 | Acc: 0.6507
+Epoch 29/30 |  val  | Loss: 0.8300 | Acc: 0.6530
+Epoch 30/30 | train | Loss: 0.8330 | Acc: 0.6509
+Epoch 30/30 |  val  | Loss: 0.8279 | Acc: 0.6532
+Work Done.
+using  cuda
+Traceback (most recent call last):
+  File "main.py", line 24, in <module>
+    main(vars(config))
+  File "main.py", line 20, in main
+    train(config)
+  File "/home/l/liuxiao/CS5446_Project/my-works/imitation_learning/train.py", line 101, in train
+    obses, samples = create_dataset_from_json(episode_dir, load_prop=load_prop)
+  File "/home/l/liuxiao/CS5446_Project/my-works/imitation_learning/dataloader.py", line 69, in create_dataset_from_json
+    unit_id, label = to_label(action)
+  File "/home/l/liuxiao/CS5446_Project/my-works/imitation_learning/dataloader.py", line 17, in to_label
+    elif str[0] == 'r': # citytile
+TypeError: 'type' object is not subscriptable
+using  cuda
+xxxxxx
+xxxxxx
+xxxxxx
+Traceback (most recent call last):
+  File "main.py", line 24, in <module>
+    main(vars(config))
+  File "main.py", line 20, in main
+    train(config)
+  File "/home/l/liuxiao/CS5446_Project/my-works/imitation_learning/train.py", line 101, in train
+    obses, samples = create_dataset_from_json(episode_dir, load_prop=load_prop)
+  File "/home/l/liuxiao/CS5446_Project/my-works/imitation_learning/dataloader.py", line 69, in create_dataset_from_json
+    unit_id, label = to_label(action)
+  File "/home/l/liuxiao/CS5446_Project/my-works/imitation_learning/dataloader.py", line 25, in to_label
+    return unit_id, label
+UnboundLocalError: local variable 'unit_id' referenced before assignment
+using  cuda
+xxxxxx
+obses: 12628 samples: 139842
+north: 40020
+south: 33825
+west : 30187
+east : 30137
+bcity: 5673
+Traceback (most recent call last):
+  File "main.py", line 24, in <module>
+    main(vars(config))
+  File "main.py", line 20, in main
+    train(config)
+  File "/home/l/liuxiao/CS5446_Project/my-works/imitation_learning/train.py", line 130, in train
+    num_epochs=num_epochs, device=device, save_every=save_every)
+  File "/home/l/liuxiao/CS5446_Project/my-works/imitation_learning/train.py", line 17, in train_model
+    for net in net:
+UnboundLocalError: local variable 'net' referenced before assignment
+using  cuda
+xxxxxx
+xxxxxx
+obses: 12520 samples: 136663
+north: 28914
+south: 30442
+west : 30518
+east : 28786
+bcity: 5196
+research: 9111
+build_worker: 3696
+Traceback (most recent call last):
+  File "main.py", line 24, in <module>
+    main(vars(config))
+  File "main.py", line 20, in main
+    train(config)
+  File "/home/l/liuxiao/CS5446_Project/my-works/imitation_learning/train.py", line 115, in train
+    train, val = train_test_split(samples, test_size=0.1, random_state=42, stratify=labels)
+NameError: name 'labels' is not defined
+using  cuda
+xxxxxx
+xxxxxx
+xxxxxx
+xxxxxx
+obses: 12196 samples: 146468
+north: 28784
+south: 30355
+west : 35063
+east : 33389
+bcity: 5705
+research: 9274
+build_worker: 3898
+Traceback (most recent call last):
+  File "main.py", line 24, in <module>
+    main(vars(config))
+  File "main.py", line 20, in main
+    train(config)
+  File "/home/l/liuxiao/CS5446_Project/my-works/imitation_learning/train.py", line 136, in train
+    num_epochs=num_epochs, device=device, save_every=save_every)
+  File "/home/l/liuxiao/CS5446_Project/my-works/imitation_learning/train.py", line 32, in train_model
+    for item in dataloader:
+  File "/home/l/liuxiao/anaconda3/envs/cuda100/lib/python3.6/site-packages/torch/utils/data/dataloader.py", line 346, in __next__
+    data = self._dataset_fetcher.fetch(index)  # may raise StopIteration
+  File "/home/l/liuxiao/anaconda3/envs/cuda100/lib/python3.6/site-packages/torch/utils/data/_utils/fetch.py", line 44, in fetch
+    data = [self.dataset[idx] for idx in possibly_batched_index]
+  File "/home/l/liuxiao/anaconda3/envs/cuda100/lib/python3.6/site-packages/torch/utils/data/_utils/fetch.py", line 44, in <listcomp>
+    data = [self.dataset[idx] for idx in possibly_batched_index]
+  File "/home/l/liuxiao/CS5446_Project/my-works/imitation_learning/dataloader.py", line 227, in __getitem__
+    state, distance_mask, map_mask = make_input(obs, unit_id)
+  File "/home/l/liuxiao/CS5446_Project/my-works/imitation_learning/dataloader.py", line 161, in make_input
+    cooldown = float(str[5])
+TypeError: 'type' object is not subscriptable
+using  cuda
+obses: 12527 samples: 145640
+north: 31276
+south: 31821
+west : 33005
+east : 30399
+bcity: 5757
+research: 9179
+build_worker: 4203
+Traceback (most recent call last):
+  File "main.py", line 24, in <module>
+    main(vars(config))
+  File "main.py", line 20, in main
+    train(config)
+  File "/home/l/liuxiao/CS5446_Project/my-works/imitation_learning/train.py", line 136, in train
+    num_epochs=num_epochs, device=device, save_every=save_every)
+  File "/home/l/liuxiao/CS5446_Project/my-works/imitation_learning/train.py", line 32, in train_model
+    for item in dataloader:
+  File "/home/l/liuxiao/anaconda3/envs/cuda100/lib/python3.6/site-packages/torch/utils/data/dataloader.py", line 346, in __next__
+    data = self._dataset_fetcher.fetch(index)  # may raise StopIteration
+  File "/home/l/liuxiao/anaconda3/envs/cuda100/lib/python3.6/site-packages/torch/utils/data/_utils/fetch.py", line 44, in fetch
+    data = [self.dataset[idx] for idx in possibly_batched_index]
+  File "/home/l/liuxiao/anaconda3/envs/cuda100/lib/python3.6/site-packages/torch/utils/data/_utils/fetch.py", line 44, in <listcomp>
+    data = [self.dataset[idx] for idx in possibly_batched_index]
+  File "/home/l/liuxiao/CS5446_Project/my-works/imitation_learning/dataloader.py", line 227, in __getitem__
+    state, distance_mask, map_mask = make_input(obs, unit_id)
+  File "/home/l/liuxiao/CS5446_Project/my-works/imitation_learning/dataloader.py", line 206, in make_input
+    distance_mask = np.zeroes((32,32))
+AttributeError: module 'numpy' has no attribute 'zeroes'
+using  cuda
+obses: 13113 samples: 132881
+north: 29567
+south: 27689
+west : 29366
+east : 28616
+bcity: 4959
+research: 9151
+build_worker: 3533
+Traceback (most recent call last):
+  File "main.py", line 24, in <module>
+    main(vars(config))
+  File "main.py", line 20, in main
+    train(config)
+  File "/home/l/liuxiao/CS5446_Project/my-works/imitation_learning/train.py", line 136, in train
+    num_epochs=num_epochs, device=device, save_every=save_every)
+  File "/home/l/liuxiao/CS5446_Project/my-works/imitation_learning/train.py", line 40, in train_model
+    optimizers[item[2]].zero_grad()
+TypeError: only integer tensors of a single element can be converted to an index
+using  cuda
+obses: 12166 samples: 144890
+north: 28468
+south: 32303
+west : 31435
+east : 34688
+bcity: 4739
+research: 9733
+build_worker: 3524
+tensor([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
+Traceback (most recent call last):
+  File "main.py", line 24, in <module>
+    main(vars(config))
+  File "main.py", line 20, in main
+    train(config)
+  File "/home/l/liuxiao/CS5446_Project/my-works/imitation_learning/train.py", line 136, in train
+    num_epochs=num_epochs, device=device, save_every=save_every)
+  File "/home/l/liuxiao/CS5446_Project/my-works/imitation_learning/train.py", line 40, in train_model
+    optimizers[item[2]].zero_grad()
+TypeError: only integer tensors of a single element can be converted to an index
+using  cuda
+obses: 12947 samples: 146384
+north: 34347
+south: 34128
+west : 34602
+east : 37361
+bcity: 5946
+Epoch 1/2 | train | Loss: 0.0235 | Acc: 0.2699
+Epoch 1/2 |  val  | Loss: 0.0226 | Acc: 0.3228
+Traceback (most recent call last):
+  File "main.py", line 24, in <module>
+    main(vars(config))
+  File "main.py", line 20, in main
+    train(config)
+  File "/home/l/liuxiao/CS5446_Project/my-works/imitation_learning/train.py", line 116, in train
+    num_epochs=num_epochs, device=device, save_every=save_every)
+  File "/home/l/liuxiao/CS5446_Project/my-works/imitation_learning/train.py", line 66, in train_model
+    traced = torch.jit.trace(net.cpu(), torch.rand(1, 20, 32, 32))
+  File "/home/l/liuxiao/anaconda3/envs/luxai/lib/python3.7/site-packages/torch/jit/_trace.py", line 742, in trace
+    _module_class,
+  File "/home/l/liuxiao/anaconda3/envs/luxai/lib/python3.7/site-packages/torch/jit/_trace.py", line 940, in trace_module
+    _force_outplace,
+  File "/home/l/liuxiao/anaconda3/envs/luxai/lib/python3.7/site-packages/torch/nn/modules/module.py", line 725, in _call_impl
+    result = self._slow_forward(*input, **kwargs)
+  File "/home/l/liuxiao/anaconda3/envs/luxai/lib/python3.7/site-packages/torch/nn/modules/module.py", line 709, in _slow_forward
+    result = self.forward(*input, **kwargs)
+  File "/home/l/liuxiao/CS5446_Project/my-works/imitation_learning/model.py", line 115, in forward
+    x = self.relu(self.encode(x))
+  File "/home/l/liuxiao/CS5446_Project/my-works/imitation_learning/model.py", line 99, in encode
+    x = self.relu(self.conv_skips[i](x) + self.conv_blocks[i](x)) 
+  File "/home/l/liuxiao/anaconda3/envs/luxai/lib/python3.7/site-packages/torch/nn/modules/module.py", line 725, in _call_impl
+    result = self._slow_forward(*input, **kwargs)
+  File "/home/l/liuxiao/anaconda3/envs/luxai/lib/python3.7/site-packages/torch/nn/modules/module.py", line 709, in _slow_forward
+    result = self.forward(*input, **kwargs)
+  File "/home/l/liuxiao/anaconda3/envs/luxai/lib/python3.7/site-packages/torch/nn/modules/conv.py", line 423, in forward
+    return self._conv_forward(input, self.weight)
+  File "/home/l/liuxiao/anaconda3/envs/luxai/lib/python3.7/site-packages/torch/nn/modules/conv.py", line 420, in _conv_forward
+    self.padding, self.dilation, self.groups)
+RuntimeError: Given groups=1, weight of size [64, 21, 1, 1], expected input[1, 20, 32, 32] to have 21 channels, but got 20 channels instead
+using  cuda
+obses: 13128 samples: 127964
+north: 29174
+south: 29744
+west : 30992
+east : 32381
+bcity: 5673
+Epoch 1/2 | train | Loss: 0.0238 | Acc: 0.2615
+Epoch 1/2 |  val  | Loss: 0.0229 | Acc: 0.2894
+Epoch 2/2 | train | Loss: 0.0228 | Acc: 0.3124
+Epoch 2/2 |  val  | Loss: 0.0229 | Acc: 0.3174
+Work Done.
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          using  cuda
+obses: 12617 samples: 130010
+north: 30693
+south: 30026
+west : 32048
+east : 32407
+bcity: 4836
+Epoch 1/2 | train | Loss: 0.0233 | Acc: 0.2861
+Epoch 1/2 |  val  | Loss: 0.0227 | Acc: 0.2998
+Epoch 2/2 | train | Loss: 0.0225 | Acc: 0.3213
+Epoch 2/2 |  val  | Loss: 0.0226 | Acc: 0.3313
+Work Done.
+using  cuda
+obses: 11685 samples: 111792
+north: 29127
+south: 23906
+west : 27920
+east : 26897
+bcity: 3942
+Traceback (most recent call last):
+  File "main.py", line 24, in <module>
+    main(vars(config))
+  File "main.py", line 20, in main
+    train(config)
+  File "/home/l/liuxiao/CS5446_Project/my-works/imitation_learning/train.py", line 116, in train
+    num_epochs=num_epochs, device=device, save_every=save_every)
+  File "/home/l/liuxiao/CS5446_Project/my-works/imitation_learning/train.py", line 39, in train_model
+    policy = net([states,distance_m,map_m])
+  File "/home/l/liuxiao/anaconda3/envs/luxai/lib/python3.7/site-packages/torch/nn/modules/module.py", line 727, in _call_impl
+    result = self.forward(*input, **kwargs)
+  File "/home/l/liuxiao/CS5446_Project/my-works/imitation_learning/model.py", line 129, in forward
+    x = self.relu(self.encode(input))
+  File "/home/l/liuxiao/CS5446_Project/my-works/imitation_learning/model.py", line 110, in encode
+    x = self.relu(self.conv_skips[i](x) + self.conv_blocks[i](x)) 
+  File "/home/l/liuxiao/anaconda3/envs/luxai/lib/python3.7/site-packages/torch/nn/modules/module.py", line 727, in _call_impl
+    result = self.forward(*input, **kwargs)
+  File "/home/l/liuxiao/CS5446_Project/my-works/imitation_learning/model.py", line 60, in forward
+    return self.deconv(x)    
+  File "/home/l/liuxiao/anaconda3/envs/luxai/lib/python3.7/site-packages/torch/nn/modules/module.py", line 727, in _call_impl
+    result = self.forward(*input, **kwargs)
+  File "/home/l/liuxiao/anaconda3/envs/luxai/lib/python3.7/site-packages/torch/nn/modules/container.py", line 117, in forward
+    input = module(input)
+  File "/home/l/liuxiao/anaconda3/envs/luxai/lib/python3.7/site-packages/torch/nn/modules/module.py", line 727, in _call_impl
+    result = self.forward(*input, **kwargs)
+  File "/home/l/liuxiao/anaconda3/envs/luxai/lib/python3.7/site-packages/torch/nn/modules/conv.py", line 929, in forward
+    output_padding, self.groups, self.dilation)
+RuntimeError: output padding must be smaller than either stride or dilation, but got output_padding_height: 1 output_padding_width: 1 stride_height: 1 stride_width: 1 dilation_height: 1 dilation_width: 1
+/home/l/liuxiao/anaconda3/envs/luxai/lib/python3.7/site-packages/torch/tensor.py:593: RuntimeWarning: Iterating over a tensor might cause the trace to be incorrect. Passing a tensor of different shape won't change the number of iterations executed (and might lead to errors or silently give incorrect results).
+  'incorrect results).', category=RuntimeWarning)
+using  cuda
+obses: 12450 samples: 114232
+north: 26093
+south: 27038
+west : 29072
+east : 27926
+bcity: 4103
+Epoch 1/2 | train | Loss: 0.0237 | Acc: 0.2740
+Epoch 1/2 |  val  | Loss: 0.0227 | Acc: 0.3034
+Traceback (most recent call last):
+  File "main.py", line 24, in <module>
+    main(vars(config))
+  File "main.py", line 20, in main
+    train(config)
+  File "/home/l/liuxiao/CS5446_Project/my-works/imitation_learning/train.py", line 116, in train
+    num_epochs=num_epochs, device=device, save_every=save_every)
+  File "/home/l/liuxiao/CS5446_Project/my-works/imitation_learning/train.py", line 66, in train_model
+    traced = torch.jit.trace(net.cpu(), torch.rand(1, 21, 32, 32))
+  File "/home/l/liuxiao/anaconda3/envs/luxai/lib/python3.7/site-packages/torch/jit/_trace.py", line 742, in trace
+    _module_class,
+  File "/home/l/liuxiao/anaconda3/envs/luxai/lib/python3.7/site-packages/torch/jit/_trace.py", line 940, in trace_module
+    _force_outplace,
+  File "/home/l/liuxiao/anaconda3/envs/luxai/lib/python3.7/site-packages/torch/nn/modules/module.py", line 725, in _call_impl
+    result = self._slow_forward(*input, **kwargs)
+  File "/home/l/liuxiao/anaconda3/envs/luxai/lib/python3.7/site-packages/torch/nn/modules/module.py", line 709, in _slow_forward
+    result = self.forward(*input, **kwargs)
+  File "/home/l/liuxiao/CS5446_Project/my-works/imitation_learning/model.py", line 129, in forward
+    x = self.relu(self.encode(input))
+  File "/home/l/liuxiao/CS5446_Project/my-works/imitation_learning/model.py", line 108, in encode
+    x, distance_m, map_m = input
+ValueError: not enough values to unpack (expected 3, got 1)
+using  cuda
+obses: 12176 samples: 93513
+north: 22603
+south: 20903
+west : 22415
+east : 23617
+bcity: 3975
+Epoch 1/2 | train | Loss: 0.0238 | Acc: 0.2865
+Traceback (most recent call last):
+  File "main.py", line 24, in <module>
+    main(vars(config))
+  File "main.py", line 20, in main
+    train(config)
+  File "/home/l/liuxiao/CS5446_Project/my-works/imitation_learning/train.py", line 114, in train
+    num_epochs=num_epochs, device=device, save_every=save_every)
+  File "/home/l/liuxiao/CS5446_Project/my-works/imitation_learning/train.py", line 37, in train_model
+    policy = net(states)
+  File "/home/l/liuxiao/anaconda3/envs/luxai/lib/python3.7/site-packages/torch/nn/modules/module.py", line 727, in _call_impl
+    result = self.forward(*input, **kwargs)
+  File "/home/l/liuxiao/CS5446_Project/my-works/imitation_learning/model.py", line 129, in forward
+    x = self.relu(self.encode(input))
+  File "/home/l/liuxiao/CS5446_Project/my-works/imitation_learning/model.py", line 111, in encode
+    x = x * distance_m * map_m
+RuntimeError: The size of tensor a (64) must match the size of tensor b (8) at non-singleton dimension 1
+using  cuda
+obses: 13069 samples: 150919
+north: 34018
+south: 37959
+west : 34992
+east : 37656
+bcity: 6294
+Traceback (most recent call last):
+  File "main.py", line 24, in <module>
+    main(vars(config))
+  File "main.py", line 20, in main
+    train(config)
+  File "/home/l/liuxiao/CS5446_Project/my-works/imitation_learning/train.py", line 114, in train
+    num_epochs=num_epochs, device=device, save_every=save_every)
+  File "/home/l/liuxiao/CS5446_Project/my-works/imitation_learning/train.py", line 37, in train_model
+    policy = net(states)
+  File "/home/l/liuxiao/anaconda3/envs/luxai/lib/python3.7/site-packages/torch/nn/modules/module.py", line 727, in _call_impl
+    result = self.forward(*input, **kwargs)
+  File "/home/l/liuxiao/CS5446_Project/my-works/imitation_learning/model.py", line 129, in forward
+    x = self.relu(self.encode(input))
+  File "/home/l/liuxiao/CS5446_Project/my-works/imitation_learning/model.py", line 111, in encode
+    x = x * distance_m * map_m
+RuntimeError: The size of tensor a (64) must match the size of tensor b (19) at non-singleton dimension 1
+using  cuda
+obses: 12879 samples: 130614
+north: 29480
+south: 31351
+west : 32184
+east : 32600
+bcity: 4999
+
+Traceback (most recent call last):
+  File "main.py", line 24, in <module>
+    main(vars(config))
+  File "main.py", line 20, in main
+    train(config)
+  File "/home/l/liuxiao/CS5446_Project/my-works/imitation_learning/train.py", line 114, in train
+    num_epochs=num_epochs, device=device, save_every=save_every)
+  File "/home/l/liuxiao/CS5446_Project/my-works/imitation_learning/train.py", line 37, in train_model
+    policy = net(states)
+  File "/home/l/liuxiao/anaconda3/envs/luxai/lib/python3.7/site-packages/torch/nn/modules/module.py", line 727, in _call_impl
+    result = self.forward(*input, **kwargs)
+  File "/home/l/liuxiao/CS5446_Project/my-works/imitation_learning/model.py", line 131, in forward
+    x = self.relu(self.encode(input))
+  File "/home/l/liuxiao/CS5446_Project/my-works/imitation_learning/model.py", line 113, in encode
+    x = x * distance_m * map_m
+RuntimeError: The size of tensor a (64) must match the size of tensor b (48) at non-singleton dimension 1
+using  cuda
+obses: 12336 samples: 121837
+north: 30044
+south: 27171
+west : 30243
+east : 30053
+bcity: 4326
+Epoch 1/2 | train | Loss: 1.5148 | Acc: 0.2828
+Epoch 1/2 |  val  | Loss: 1.4318 | Acc: 0.3169
+Traceback (most recent call last):
+  File "main.py", line 24, in <module>
+    main(vars(config))
+  File "main.py", line 20, in main
+    train(config)
+  File "/home/l/liuxiao/CS5446_Project/my-works/imitation_learning/train.py", line 114, in train
+    num_epochs=num_epochs, device=device, save_every=save_every)
+  File "/home/l/liuxiao/CS5446_Project/my-works/imitation_learning/train.py", line 64, in train_model
+    traced = torch.jit.trace(net.cpu(), torch.rand(1, 21, 32, 32))
+  File "/home/l/liuxiao/anaconda3/envs/luxai/lib/python3.7/site-packages/torch/jit/_trace.py", line 742, in trace
+    _module_class,
+  File "/home/l/liuxiao/anaconda3/envs/luxai/lib/python3.7/site-packages/torch/jit/_trace.py", line 940, in trace_module
+    _force_outplace,
+  File "/home/l/liuxiao/anaconda3/envs/luxai/lib/python3.7/site-packages/torch/nn/modules/module.py", line 725, in _call_impl
+    result = self._slow_forward(*input, **kwargs)
+  File "/home/l/liuxiao/anaconda3/envs/luxai/lib/python3.7/site-packages/torch/nn/modules/module.py", line 709, in _slow_forward
+    result = self.forward(*input, **kwargs)
+  File "/home/l/liuxiao/CS5446_Project/my-works/imitation_learning/model.py", line 131, in forward
+    x = self.relu(self.encode(input))
+  File "/home/l/liuxiao/CS5446_Project/my-works/imitation_learning/model.py", line 108, in encode
+    x, distance_m, map_m = input[:,0:21], input[:,21], input[:,22]
+IndexError: index 21 is out of bounds for dimension 1 with size 21
+using  cuda
+obses: 12545 samples: 136824
+north: 32005
+south: 32300
+west : 33133
+east : 34172
+bcity: 5214
+Epoch 1/2 | train | Loss: 1.5044 | Acc: 0.2948
+Epoch 1/2 |  val  | Loss: 1.4603 | Acc: 0.3143
+Epoch 2/2 | train | Loss: 1.4377 | Acc: 0.3262
+Epoch 2/2 |  val  | Loss: 1.4188 | Acc: 0.3394
+Work Done.
+using  cuda
+Traceback (most recent call last):
+  File "main.py", line 24, in <module>
+    main(vars(config))
+  File "main.py", line 20, in main
+    train(config)
+  File "/home/l/liuxiao/CS5446_Project/my-works/imitation_learning/train.py", line 95, in train
+    obses, samples = create_dataset_from_json(episode_dir, load_prop=load_prop)
+  File "/home/l/liuxiao/CS5446_Project/my-works/imitation_learning/dataloader.py", line 38, in create_dataset_from_json
+    data = json.load(f)
+  File "/home/l/liuxiao/anaconda3/envs/luxai/lib/python3.7/json/__init__.py", line 296, in load
+    parse_constant=parse_constant, object_pairs_hook=object_pairs_hook, **kw)
+  File "/home/l/liuxiao/anaconda3/envs/luxai/lib/python3.7/json/__init__.py", line 348, in loads
+    return _default_decoder.decode(s)
+  File "/home/l/liuxiao/anaconda3/envs/luxai/lib/python3.7/json/decoder.py", line 337, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/home/l/liuxiao/anaconda3/envs/luxai/lib/python3.7/json/decoder.py", line 353, in raw_decode
+    obj, end = self.scan_once(s, idx)
+KeyboardInterrupt
+using  cuda
+obses: 12489 samples: 112871
+north: 27118
+south: 26392
+west : 27319
+east : 26989
+bcity: 5053
+Epoch 1/2 | train | Loss: 1.5353 | Acc: 0.2657
+Epoch 1/2 |  val  | Loss: 1.4646 | Acc: 0.3026
+Epoch 2/2 | train | Loss: 1.4625 | Acc: 0.3051
+Epoch 2/2 |  val  | Loss: 1.4470 | Acc: 0.3191
+Work Done.
+using  cuda
+obses: 13050 samples: 137970
+north: 31651
+south: 31726
+west : 36218
+east : 33495
+bcity: 4880
+Epoch 1/2 | train | Loss: 1.4880 | Acc: 0.2991
+Epoch 1/2 |  val  | Loss: 1.4239 | Acc: 0.3351
+Epoch 2/2 | train | Loss: 1.4232 | Acc: 0.3343
+Epoch 2/2 |  val  | Loss: 1.4214 | Acc: 0.3388
+Work Done.
+using  cuda
+obses: 13050 samples: 137970
+north: 31651
+south: 31726
+west : 36218
+east : 33495
+bcity: 4880
+Epoch 1/2 | train | Loss: 1.4754 | Acc: 0.3063
+Epoch 1/2 |  val  | Loss: 1.4211 | Acc: 0.3335
+Epoch 2/2 | train | Loss: 1.4133 | Acc: 0.3406
+Epoch 2/2 |  val  | Loss: 1.4005 | Acc: 0.3508
+Work Done.
+                                                                                                                                                                                                                                                                                                                using  cuda
+obses: 13050 samples: 137970
+north: 31651
+south: 31726
+west : 36218
+east : 33495
+bcity: 4880
+Epoch 1/2 | train | Loss: 1.4754 | Acc: 0.3053
+Epoch 1/2 |  val  | Loss: 1.4219 | Acc: 0.3326
+Epoch 2/2 | train | Loss: 1.4113 | Acc: 0.3421
+Epoch 2/2 |  val  | Loss: 1.3934 | Acc: 0.3523
+Work Done.
+using  cuda
+obses: 13050 samples: 137970
+north: 31651
+south: 31726
+west : 36218
+east : 33495
+bcity: 4880
+Traceback (most recent call last):
+  File "main.py", line 25, in <module>
+    main(vars(config))
+  File "main.py", line 21, in main
+    train(config)
+  File "/home/l/liuxiao/CS5446_Project/my-works/imitation_learning/train.py", line 121, in train
+    net = Autoencoder(option=option).to(device)
+  File "/home/l/liuxiao/CS5446_Project/my-works/imitation_learning/model.py", line 111, in __init__
+    self.conv_skips, self.conv_blocks, self.in_feature = make_layers(input_shape, self.conv_layers)
+  File "/home/l/liuxiao/CS5446_Project/my-works/imitation_learning/model.py", line 66, in make_layers
+    for layer in layers:
+TypeError: 'NoneType' object is not iterable
+using  cuda
+obses: 13050 samples: 137970
+north: 31651
+south: 31726
+west : 36218
+east : 33495
+bcity: 4880
+Epoch 1/2 | train | Loss: 1.4843 | Acc: 0.3033
+Epoch 1/2 |  val  | Loss: 1.4271 | Acc: 0.3249
+Epoch 2/2 | train | Loss: 1.4181 | Acc: 0.3364
+Epoch 2/2 |  val  | Loss: 1.4010 | Acc: 0.3561
+Work Done.
+                                                                                                                                                                                                                                                                                                                using  cuda
+obses: 13050 samples: 137970
+north: 31651
+south: 31726
+west : 36218
+east : 33495
+bcity: 4880
+Epoch 1/2 | train | Loss: 1.4807 | Acc: 0.2945
+Epoch 1/2 |  val  | Loss: 1.4274 | Acc: 0.3257
+Epoch 2/2 | train | Loss: 1.4224 | Acc: 0.3346
+Epoch 2/2 |  val  | Loss: 1.4061 | Acc: 0.3488
+Work Done.
+                                                                                                                                                                                                                                                                                                                                          using  cuda
+obses: 124695 samples: 1202907
+north: 279481
+south: 278803
+west : 298971
+east : 295625
+bcity: 50027
+option: 1 load prop: 0.1
+Epoch 1/5 | train | Loss: 1.4564 | Acc: 0.3026
+Epoch 1/5 |  val  | Loss: 1.4167 | Acc: 0.3347
+Epoch 2/5 | train | Loss: 1.4113 | Acc: 0.3466
+Epoch 2/5 |  val  | Loss: 1.3446 | Acc: 0.3878
+Epoch 3/5 | train | Loss: 1.3321 | Acc: 0.3942
+Epoch 3/5 |  val  | Loss: 1.3007 | Acc: 0.4185
+Epoch 4/5 | train | Loss: 1.2912 | Acc: 0.4169
+Epoch 4/5 |  val  | Loss: 1.2486 | Acc: 0.4423
+Epoch 5/5 | train | Loss: 1.2644 | Acc: 0.4322
+Epoch 5/5 |  val  | Loss: 1.2325 | Acc: 0.4506
+Work Done.

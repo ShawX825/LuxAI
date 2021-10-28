@@ -1,0 +1,1 @@
+nohup python main.py --load_prop 0.1 --epoch 5 --option 0
