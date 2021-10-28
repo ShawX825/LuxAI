@@ -5,7 +5,7 @@ from torch.utils.data import Dataset
 from sklearn.model_selection import train_test_split
 
 
-
+TEAM = ['Toad Brigade', 'RL is all you need', 'Love Deluxe', 'Tigga', 'perspective']
 def to_label(action):
     strs = action.split(' ')
     unit_id = strs[1]
@@ -39,7 +39,8 @@ def create_dataset_from_json(episode_dir, load_prop=0.1):
 
         eps_id = data['info']['EpisodeId']
         index = np.argmax([r or 0 for r in data['rewards']]) # winner index of current episode
-
+        if data['info']['TeamNames'][index] not in TEAM:
+            continue
         for i in range(len(data['steps'])-1):
             if data['steps'][i][index]['status'] == 'ACTIVE':
                 actions = data['steps'][i+1][index]['action']

@@ -124,10 +124,12 @@ def train(config):
     criterion = nn.CrossEntropyLoss()
     optimizer = torch.optim.AdamW(net.parameters(), lr=learning_rate)
 
+    time_start = time.time()
     records = train_model(net, model_path ,dataloaders_dict, criterion, optimizer,
         num_epochs=num_epochs, device=device, save_every=save_every)
+    time_end = time.time()
     
     np.savetxt(os.path.join(model_path,'records.csv'), np.array(records), delimiter=",")
     with open(os.path.join(model_path,'config.json'), 'w') as f:
         json.dump(config, f)
-    print('Work Done.')
+    print('Work Done. Total cost:',time_end - time_start, 's')
