@@ -5,7 +5,8 @@ from torch.utils.data import Dataset
 from sklearn.model_selection import train_test_split
 
 
-TEAM = ['Toad Brigade', 'RL is all you need', 'Love Deluxe', 'Tigga', 'perspective']
+#TEAM = ['Toad Brigade', 'RL is all you need', 'Love Deluxe', 'Tigga', 'perspective']
+TEAM = ['Toad Brigade', 'RL is all you need']
 def to_label(action):
     strs = action.split(' ')
     unit_id = strs[1]
@@ -187,13 +188,13 @@ def make_input(obs, unit_id):
             # Road
         #    x = 
     # #unity, #citytile
-    b[17, :] = count_u / 100
-    b[18, :] = count_ct / 100
+    #b[17, :] = count_u / 100
+    #b[18, :] = count_ct / 100
 
     # Day/Night Cycle
-    b[19, :] = obs['step'] % 40 / 40
+    b[17, :] = obs['step'] % 40 / 40
     # Turns
-    b[20, :] = obs['step'] / 360
+    b[18, :] = obs['step'] / 360
     
     # Map Size
     #b[19, x_shift:32 - x_shift, y_shift:32 - y_shift] = 1
@@ -204,8 +205,8 @@ def make_input(obs, unit_id):
             distance_mask[i, j] = 1 - ((i - pos_y)**2 + (j - pos_x)**2) / 2048
     map_mask = np.zeros((32,32))
     map_mask[x_shift:32 - x_shift, y_shift:32 - y_shift] = 1
-    b[21, :] = distance_mask
-    b[22, :] = map_mask
+    b[19, :] = distance_mask
+    b[20, :] = map_mask
 
     return b
 

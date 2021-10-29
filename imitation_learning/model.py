@@ -2,6 +2,8 @@ from torch import nn
 import torch
 import torch.nn.functional as F
 
+CHANNEL = 21
+
 class BasicConv2d(nn.Module):
     def __init__(self, input_dim, output_dim, kernel_size, bn):
         super().__init__()
@@ -83,19 +85,19 @@ def make_layers(in_shape, layers):
     return nn.ModuleList(skips), nn.ModuleList(convs), c*w*w
 
 opt = { 
-    0: {'conv_layers': [[23,64,3,1,1]] + [[64,64,3,1,1] for _ in range(4)],
+    0: {'conv_layers': [[CHANNEL,64,3,1,1]] + [[64,64,3,1,1] for _ in range(4)],
         'conv_1': nn.Conv2d(64,128,3,2,1),
         'avg_pool': nn.AvgPool2d(kernel_size=3,stride=2,padding=1),
         'dem': 8,
         'nonlinearity': nn.ReLU()
     },
-    1: {'conv_layers': [[23,64,3,1,1]] + [[64,64,3,1,1] for _ in range(5)],
+    1: {'conv_layers': [[CHANNEL,64,3,1,1]] + [[64,64,3,1,1] for _ in range(5)],
         'conv_1': nn.Conv2d(64,128,3,2,1),
         'avg_pool': nn.AvgPool2d(kernel_size=3,stride=2,padding=1),
         'dem': 8,
         'nonlinearity': nn.LeakyReLU()
     },
-    2: {'conv_layers': [[23,64,3,1,1]] + [[64,64,3,1,1] for _ in range(6)],
+    2: {'conv_layers': [[CHANNEL,64,3,1,1]] + [[64,64,3,1,1] for _ in range(6)],
         'conv_1': nn.Conv2d(64,128,3,2,1),
         'avg_pool': nn.AvgPool2d(kernel_size=3,stride=2,padding=1),
         'dem': 8,
@@ -104,7 +106,7 @@ opt = {
 }
 
 class Autoencoder(nn.Module):
-    def __init__(self, input_shape=(23,32,32), hidden_shape=512, num_action=5, option=0):
+    def __init__(self, input_shape=(CHANNEL,32,32), hidden_shape=512, num_action=5, option=0):
         super().__init__()
         self.in_channel, self.in_w, self.in_h = input_shape
         self.conv_layers = opt[option]['conv_layers']
@@ -121,14 +123,14 @@ class Autoencoder(nn.Module):
         self.relu = opt[option]['nonlinearity']
     
     def encode(self, input):
-        #x, distance_m, map_m = input[:,0:21], input[:,21], input[:,22]
-        #distance_m = distance_m.unsqueeze(1)
-        #map_m = map_m.unsqueeze(1)
+        x, distance_m, map_m = input, input[:,21], input[:,22]
+        distance_m = distance_m.unsqueeze(1)
+        map_m = map_m.unsqueeze(1)
         #x = self.relu(self.conv0(x))
-        x = input
+        #x = input
         for i in range(len(self.conv_layers)):
             x = self.relu(self.conv_skips[i](x) + self.conv_blocks[i](x))
-        #x = x * distance_m * map_m
+        x = x * distance_m * map_m
         x = self.relu(self.conv1(x))
         x = self.avg_pool(x)
         x = self.flatten(x)
