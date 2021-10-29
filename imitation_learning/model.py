@@ -123,11 +123,11 @@ class Autoencoder(nn.Module):
         self.relu = opt[option]['nonlinearity']
     
     def encode(self, input):
-        #x, distance_m, map_m = input[:,:19], input[:,19], input[:,20]
-        #distance_m = distance_m.unsqueeze(1)
-        #map_m = map_m.unsqueeze(1)
+        x, distance_m, map_m = input[:,:21], input[:,21], input[:,22]
+        distance_m = distance_m.unsqueeze(1)
+        map_m = map_m.unsqueeze(1)
         #x = self.relu(self.conv0(x))
-        x = input
+        #x = input
         for i in range(len(self.conv_layers)):
             x = self.relu(self.conv_skips[i](x) + self.conv_blocks[i](x))
         #x = x * distance_m * map_m

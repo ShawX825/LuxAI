@@ -72,7 +72,7 @@ def train_model(net, model_path, dataloaders_dict, criterion,
                 }
             torch.save(checkpoint, os.path.join(model_path,'best_for_analysis.pt'))
 
-            traced = torch.jit.trace(net.cpu(), torch.rand(1, CHANNEL, 32, 32))
+            traced = torch.jit.trace(net.cpu(), torch.rand(1, CHANNEL+2, 32, 32))
             traced.save(os.path.join(model_path,'best.pth'))
             best_acc = epoch_acc
 
