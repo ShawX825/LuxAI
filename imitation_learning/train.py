@@ -105,7 +105,7 @@ def train(config):
     model_path = 'model_checkpoints/{}'.format(st)
     os.makedirs(model_path)
 
-    episode_dir = '../data/episodes_top5'
+    episode_dir = '../data/episodes_top5' if config['mode'] != 'test' else '../data/episodes_test'
     obses, samples = create_dataset_from_json(episode_dir, load_prop=load_prop)
     u_labels = [sample[-1] for sample in samples]
     
@@ -117,8 +117,10 @@ def train(config):
 
     print('option:', option, 'load prop:', load_prop)
     train, val = train_test_split(samples, test_size=0.1, random_state=42)
-    train_loader = DataLoader(LuxDataset(obses, train), batch_size=batch_size, shuffle=True)
-    val_loader = DataLoader(LuxDataset(obses, val), batch_size=batch_size, shuffle=False)
+    train_loader = DataLoader(LuxDataset(obses, train), batch_size=batch_size, shuffle=True,\
+        num_workers=0, worker_init_fn=np.random.seed(SEED))
+    val_loader = DataLoader(LuxDataset(obses, val), batch_size=batch_size, shuffle=False,\
+        num_workers=0, worker_init_fn=np.random.seed(SEED))
 
     net = Autoencoder(input_shape=(CHANNEL,32,32),option=option).to(device)
     dataloaders_dict = {"train": train_loader, "val": val_loader}

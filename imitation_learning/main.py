@@ -12,6 +12,7 @@ def parse_arg():
     parser.add_argument('--load_prop', type=float, default=0.1)
     parser.add_argument('--load_last_ckpt', type=bool, default=False)
     parser.add_argument('--last_ckpt_dir', type=str, default=None)
+    parser.add_argument('--mode',type=str, default=None)
     args = parser.parse_args()
 
     return args

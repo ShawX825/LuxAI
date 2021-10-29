@@ -23,7 +23,7 @@ class LuxNet(nn.Module):
     def __init__(self): 
         super().__init__()
         layers, filters = 12, 32
-        self.conv0 = BasicConv2d(20, filters, (3, 3), True)
+        self.conv0 = BasicConv2d(CHANNEL, filters, (3, 3), True)
         self.blocks = nn.ModuleList([BasicConv2d(filters, filters, (3, 3), True) for _ in range(layers)])
         self.head_p = nn.Linear(filters, 5, bias=False)
 
@@ -123,14 +123,14 @@ class Autoencoder(nn.Module):
         self.relu = opt[option]['nonlinearity']
     
     def encode(self, input):
-        x, distance_m, map_m = input, input[:,21], input[:,22]
-        distance_m = distance_m.unsqueeze(1)
-        map_m = map_m.unsqueeze(1)
+        #x, distance_m, map_m = input[:,:19], input[:,19], input[:,20]
+        #distance_m = distance_m.unsqueeze(1)
+        #map_m = map_m.unsqueeze(1)
         #x = self.relu(self.conv0(x))
-        #x = input
+        x = input
         for i in range(len(self.conv_layers)):
             x = self.relu(self.conv_skips[i](x) + self.conv_blocks[i](x))
-        x = x * distance_m * map_m
+        #x = x * distance_m * map_m
         x = self.relu(self.conv1(x))
         x = self.avg_pool(x)
         x = self.flatten(x)

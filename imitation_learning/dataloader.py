@@ -115,7 +115,7 @@ def make_input(obs, unit_id):
     y_shift = (32 - height) // 2
     cities = {}
     
-    b = np.zeros((23, 32, 32), dtype=np.float32)
+    b = np.zeros((21, 32, 32), dtype=np.float32)
     pos_x, pos_y = 0, 0
     count_u, count_ct = 0, 0
 
@@ -126,7 +126,7 @@ def make_input(obs, unit_id):
         # example: 'u 0 0 u_11 2 26 0 100 0 0'
         # identifier unit_type team unit_id pos_x pos_y cooldown wood coal uranium
         if input_identifier == 'u': 
-            count_u += 1
+            #count_u += 1
             x = int(strs[4]) + x_shift
             y = int(strs[5]) + y_shift
             wood = int(strs[7])
@@ -149,7 +149,7 @@ def make_input(obs, unit_id):
 
         elif input_identifier == 'ct':
             # CityTiles
-            count_ct += 1
+            #count_ct += 1
             team = int(strs[1])
             city_id = strs[2]
             x = int(strs[3]) + x_shift
