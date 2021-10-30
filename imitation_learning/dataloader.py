@@ -115,7 +115,7 @@ def make_input(obs, unit_id):
     y_shift = (32 - height) // 2
     cities = {}
     
-    b = np.zeros((21, 32, 32), dtype=np.float32)
+    b = np.zeros((20, 32, 32), dtype=np.float32)
     pos_x, pos_y = 0, 0
     count_u, count_ct = 0, 0
 
@@ -136,7 +136,7 @@ def make_input(obs, unit_id):
             if unit_id == strs[3]:
                 pos_x, pos_y = x, y
                 # Position and Cargo
-                #b[:2, x, y] = (1, (wood + coal + uranium) / 100) 
+                b[:2, x, y] = (1, (wood + coal + uranium) / 100) 
             #else:
             # Units
             team = int(strs[2])
@@ -144,7 +144,8 @@ def make_input(obs, unit_id):
 
             # idx 0:3 own resources
             # idx 3:6 adversary's resources
-            idx = (team - obs['player']) % 2 * 3 
+            #idx = (team - obs['player']) % 2 * 3 
+            idx = 2 + (team - obs['player']) % 2 * 3 
             b[idx:idx + 3, x, y] = (1, cooldown / 6, (wood + coal + uranium) / 100)
 
         elif input_identifier == 'ct':
@@ -160,8 +161,10 @@ def make_input(obs, unit_id):
                 pos_x, pos_y = x, y
             # idx 6:9 own citytiles
             # idx 9:12 adversary citytiles
-            idx = 6 + (team - obs['player']) % 2 * 3
-            b[idx:idx + 3, x, y] =  (1, cities[city_id], cooldown / 6)
+            #idx = 6 or 8 (cooldown) + (team - obs['player']) % 2 * 3
+            idx = 8 + (team - obs['player']) % 2 * 2
+            #b[idx:idx + 3, x, y] =  (1, cities[city_id], cooldown / 6)
+            b[idx:idx + 2, x, y] =  (1, cities[city_id])
 
         elif input_identifier == 'r':
             # Resources
@@ -170,12 +173,14 @@ def make_input(obs, unit_id):
             y = int(strs[3]) + y_shift
             amt = int(float(strs[4]))
             b[{'wood': 12, 'coal': 13, 'uranium': 14}[r_type], x, y] = amt / 800
+            #b[{'wood': 14, 'coal': 15, 'uranium': 16}[r_type], x, y] = amt / 800
 
         elif input_identifier == 'rp':
             # Research Points
             team = int(strs[1])
             rp = int(strs[2])
             b[15 + (team - obs['player']) % 2, :] = min(rp, 200) / 200
+            #b[17 + (team - obs['player']) % 2, :] = min(rp, 200) / 200
 
         elif input_identifier == 'c':
             # Cities
@@ -199,14 +204,14 @@ def make_input(obs, unit_id):
     # Map Size
     #b[19, x_shift:32 - x_shift, y_shift:32 - y_shift] = 1
     
-    distance_mask = np.zeros((32,32))
-    for i in range(len(distance_mask)):
-        for j in range(len(distance_mask)):
-            distance_mask[i, j] = 1 - ((i - pos_y)**2 + (j - pos_x)**2) / 2048
+    #distance_mask = np.zeros((32,32))
+    #for i in range(len(distance_mask)):
+    #    for j in range(len(distance_mask)):
+    #        distance_mask[i, j] = 1 - ((i - pos_y)**2 + (j - pos_x)**2) / 2048
     map_mask = np.zeros((32,32))
     map_mask[x_shift:32 - x_shift, y_shift:32 - y_shift] = 1
-    b[19, :] = distance_mask
-    b[20, :] = map_mask
+    #b[22, :] = distance_mask
+    b[19, :] = map_mask
 
     return b
 

@@ -1244,3 +1244,394 @@ Epoch 4/5 |  val  | Loss: 1.0802 | Acc: 0.5316
 Epoch 5/5 | train | Loss: 1.0301 | Acc: 0.5558
 Epoch 5/5 |  val  | Loss: 1.0323 | Acc: 0.5743
 Work Done. Total cost: 542.1963763237 s
+using  cuda
+obses: 2754 samples: 22376
+north: 5640
+south: 5108
+west : 5385
+east : 5213
+bcity: 1030
+option: 1 load prop: 1.0
+Epoch 1/5 | train | Loss: 1.7292 | Acc: 0.2430
+Epoch 1/5 |  val  | Loss: 1.4965 | Acc: 0.2721
+Epoch 2/5 | train | Loss: 1.4799 | Acc: 0.2905
+Epoch 2/5 |  val  | Loss: 1.3852 | Acc: 0.3494
+Epoch 3/5 | train | Loss: 1.3819 | Acc: 0.3477
+Epoch 3/5 |  val  | Loss: 1.3104 | Acc: 0.4088
+Epoch 4/5 | train | Loss: 1.2732 | Acc: 0.4257
+Epoch 4/5 |  val  | Loss: 1.2184 | Acc: 0.4593
+Epoch 5/5 | train | Loss: 1.1735 | Acc: 0.4856
+Epoch 5/5 |  val  | Loss: 1.1382 | Acc: 0.5134
+Work Done. Total cost: 309.69394183158875 s
+using  cuda
+obses: 2754 samples: 22376
+north: 5640
+south: 5108
+west : 5385
+east : 5213
+bcity: 1030
+option: 1 load prop: 1.0
+Traceback (most recent call last):
+  File "main.py", line 26, in <module>
+    main(vars(config))
+  File "main.py", line 22, in main
+    train(config)
+  File "/home/l/liuxiao/CS5446_Project/my-works/imitation_learning/train.py", line 133, in train
+    num_epochs=num_epochs, device=device, save_every=save_every)
+  File "/home/l/liuxiao/CS5446_Project/my-works/imitation_learning/train.py", line 48, in train_model
+    policy = net(states)
+  File "/home/l/liuxiao/anaconda3/envs/luxai/lib/python3.7/site-packages/torch/nn/modules/module.py", line 727, in _call_impl
+    result = self.forward(*input, **kwargs)
+  File "/home/l/liuxiao/CS5446_Project/my-works/imitation_learning/model.py", line 31, in forward
+    h = F.relu_(self.conv0(x))
+  File "/home/l/liuxiao/anaconda3/envs/luxai/lib/python3.7/site-packages/torch/nn/modules/module.py", line 727, in _call_impl
+    result = self.forward(*input, **kwargs)
+  File "/home/l/liuxiao/CS5446_Project/my-works/imitation_learning/model.py", line 18, in forward
+    h = self.conv(x)
+  File "/home/l/liuxiao/anaconda3/envs/luxai/lib/python3.7/site-packages/torch/nn/modules/module.py", line 727, in _call_impl
+    result = self.forward(*input, **kwargs)
+  File "/home/l/liuxiao/anaconda3/envs/luxai/lib/python3.7/site-packages/torch/nn/modules/conv.py", line 423, in forward
+    return self._conv_forward(input, self.weight)
+  File "/home/l/liuxiao/anaconda3/envs/luxai/lib/python3.7/site-packages/torch/nn/modules/conv.py", line 420, in _conv_forward
+    self.padding, self.dilation, self.groups)
+RuntimeError: Given groups=1, weight of size [32, 21, 3, 3], expected input[64, 23, 32, 32] to have 21 channels, but got 23 channels instead
+using  cuda
+obses: 2754 samples: 22376
+north: 5640
+south: 5108
+west : 5385
+east : 5213
+bcity: 1030
+option: 1 load prop: 1.0
+Epoch 1/5 | train | Loss: 1.2400 | Acc: 0.4781
+Epoch 1/5 |  val  | Loss: 1.0718 | Acc: 0.5612
+Epoch 2/5 | train | Loss: 0.9823 | Acc: 0.5979
+Epoch 2/5 |  val  | Loss: 0.9965 | Acc: 0.5853
+Epoch 3/5 | train | Loss: 0.8625 | Acc: 0.6522
+Epoch 3/5 |  val  | Loss: 0.9127 | Acc: 0.6327
+Epoch 4/5 | train | Loss: 0.7766 | Acc: 0.6910
+Epoch 4/5 |  val  | Loss: 0.8984 | Acc: 0.6466
+Epoch 5/5 | train | Loss: 0.7139 | Acc: 0.7142
+Epoch 5/5 |  val  | Loss: 0.8810 | Acc: 0.6640
+Work Done. Total cost: 258.3075611591339 s
+using  cuda
+obses: 4336 samples: 40048
+north: 10465
+south: 9240
+west : 10651
+east : 8133
+bcity: 1559
+option: 1 load prop: 1.0
+Epoch 1/5 | train | Loss: 1.1148 | Acc: 0.5266
+Epoch 1/5 |  val  | Loss: 0.9465 | Acc: 0.6105
+Epoch 2/5 | train | Loss: 0.8761 | Acc: 0.6439
+Epoch 2/5 |  val  | Loss: 0.8735 | Acc: 0.6549
+Epoch 3/5 | train | Loss: 0.7823 | Acc: 0.6825
+Epoch 3/5 |  val  | Loss: 0.8360 | Acc: 0.6679
+Epoch 4/5 | train | Loss: 0.7187 | Acc: 0.7126
+Epoch 4/5 |  val  | Loss: 0.8393 | Acc: 0.6629
+Epoch 5/5 | train | Loss: 0.6708 | Acc: 0.7311
+Epoch 5/5 |  val  | Loss: 0.7915 | Acc: 0.6879
+Work Done. Total cost: 470.0417597293854 s
+using  cuda
+obses: 4336 samples: 40048
+north: 10465
+south: 9240
+west : 10651
+east : 8133
+bcity: 1559
+option: 1 load prop: 1.0
+Epoch 1/15 | train | Loss: 1.1148 | Acc: 0.5266
+Epoch 1/15 |  val  | Loss: 0.9465 | Acc: 0.6105
+Epoch 2/15 | train | Loss: 0.8761 | Acc: 0.6439
+Epoch 2/15 |  val  | Loss: 0.8735 | Acc: 0.6549
+Epoch 3/15 | train | Loss: 0.7823 | Acc: 0.6825
+Epoch 3/15 |  val  | Loss: 0.8360 | Acc: 0.6679
+Epoch 4/15 | train | Loss: 0.7187 | Acc: 0.7126
+Epoch 4/15 |  val  | Loss: 0.8393 | Acc: 0.6629
+Epoch 5/15 | train | Loss: 0.6708 | Acc: 0.7311
+Epoch 5/15 |  val  | Loss: 0.7915 | Acc: 0.6879
+Epoch 6/15 | train | Loss: 0.6273 | Acc: 0.7517
+Epoch 6/15 |  val  | Loss: 0.8065 | Acc: 0.6896
+Epoch 7/15 | train | Loss: 0.5893 | Acc: 0.7656
+Epoch 7/15 |  val  | Loss: 0.7740 | Acc: 0.6994
+Epoch 8/15 | train | Loss: 0.5514 | Acc: 0.7824
+Epoch 8/15 |  val  | Loss: 0.7922 | Acc: 0.7021
+Epoch 9/15 | train | Loss: 0.5189 | Acc: 0.7948
+Epoch 9/15 |  val  | Loss: 0.7919 | Acc: 0.6936
+Epoch 10/15 | train | Loss: 0.4911 | Acc: 0.8069
+Epoch 10/15 |  val  | Loss: 0.8016 | Acc: 0.6916
+Epoch 11/15 | train | Loss: 0.4602 | Acc: 0.8220
+Epoch 11/15 |  val  | Loss: 0.8046 | Acc: 0.7019
+Epoch 12/15 | train | Loss: 0.4359 | Acc: 0.8297
+Epoch 12/15 |  val  | Loss: 0.8261 | Acc: 0.7009
+Epoch 13/15 | train | Loss: 0.4097 | Acc: 0.8410
+Epoch 13/15 |  val  | Loss: 0.8590 | Acc: 0.7039
+Epoch 14/15 | train | Loss: 0.3847 | Acc: 0.8532
+Epoch 14/15 |  val  | Loss: 0.8501 | Acc: 0.7011
+Epoch 15/15 | train | Loss: 0.3665 | Acc: 0.8581
+Epoch 15/15 |  val  | Loss: 0.9044 | Acc: 0.7001
+Work Done. Total cost: 1434.9965872764587 s
+using  cuda
+obses: 4336 samples: 40048
+north: 10465
+south: 9240
+west : 10651
+east : 8133
+bcity: 1559
+option: 1 load prop: 1.0
+Epoch 1/15 | train | Loss: 1.5548 | Acc: 0.2798
+Epoch 1/15 |  val  | Loss: 1.4134 | Acc: 0.3308
+Epoch 2/15 | train | Loss: 1.3830 | Acc: 0.3461
+Epoch 2/15 |  val  | Loss: 1.3293 | Acc: 0.3765
+Epoch 3/15 | train | Loss: 1.2504 | Acc: 0.4382
+Epoch 3/15 |  val  | Loss: 1.1687 | Acc: 0.4799
+Epoch 4/15 | train | Loss: 1.1099 | Acc: 0.5161
+Epoch 4/15 |  val  | Loss: 1.0748 | Acc: 0.5398
+Epoch 5/15 | train | Loss: 1.0259 | Acc: 0.5640
+Epoch 5/15 |  val  | Loss: 1.0139 | Acc: 0.5793
+Epoch 6/15 | train | Loss: 0.9544 | Acc: 0.6006
+Epoch 6/15 |  val  | Loss: 0.9810 | Acc: 0.5983
+Epoch 7/15 | train | Loss: 0.8906 | Acc: 0.6318
+Epoch 7/15 |  val  | Loss: 0.9397 | Acc: 0.6200
+Epoch 8/15 | train | Loss: 0.8344 | Acc: 0.6583
+Epoch 8/15 |  val  | Loss: 0.9387 | Acc: 0.6262
+Epoch 9/15 | train | Loss: 0.7784 | Acc: 0.6818
+Epoch 9/15 |  val  | Loss: 0.9012 | Acc: 0.6417
+Epoch 10/15 | train | Loss: 0.7271 | Acc: 0.7054
+Epoch 10/15 |  val  | Loss: 0.9003 | Acc: 0.6414
+Epoch 11/15 | train | Loss: 0.6830 | Acc: 0.7254
+Epoch 11/15 |  val  | Loss: 0.9070 | Acc: 0.6524
+Epoch 12/15 | train | Loss: 0.6373 | Acc: 0.7469
+Epoch 12/15 |  val  | Loss: 0.8897 | Acc: 0.6669
+Epoch 13/15 | train | Loss: 0.5945 | Acc: 0.7657
+Epoch 13/15 |  val  | Loss: 0.9126 | Acc: 0.6719
+Epoch 14/15 | train | Loss: 0.5515 | Acc: 0.7838
+Epoch 14/15 |  val  | Loss: 0.9596 | Acc: 0.6609
+Epoch 15/15 | train | Loss: 0.5111 | Acc: 0.7991
+Epoch 15/15 |  val  | Loss: 0.9619 | Acc: 0.6667
+Work Done. Total cost: 1626.7883849143982 s
+using  cuda
+obses: 4336 samples: 40048
+north: 10465
+south: 9240
+west : 10651
+east : 8133
+bcity: 1559
+option: 1 load prop: 1.0
+Epoch 1/10 | train | Loss: 1.6109 | Acc: 0.4157
+Epoch 1/10 |  val  | Loss: 1.0607 | Acc: 0.5588
+Epoch 2/10 | train | Loss: 0.9735 | Acc: 0.6061
+Epoch 2/10 |  val  | Loss: 0.9498 | Acc: 0.6235
+Epoch 3/10 | train | Loss: 0.8615 | Acc: 0.6576
+Epoch 3/10 |  val  | Loss: 0.8996 | Acc: 0.6622
+Epoch 4/10 | train | Loss: 0.7857 | Acc: 0.6896
+Epoch 4/10 |  val  | Loss: 0.8024 | Acc: 0.6824
+Epoch 5/10 | train | Loss: 0.7225 | Acc: 0.7180
+Epoch 5/10 |  val  | Loss: 0.7707 | Acc: 0.6959
+Epoch 6/10 | train | Loss: 0.6782 | Acc: 0.7331
+Epoch 6/10 |  val  | Loss: 0.7534 | Acc: 0.7034
+Epoch 7/10 | train | Loss: 0.6264 | Acc: 0.7555
+Epoch 7/10 |  val  | Loss: 0.7578 | Acc: 0.7171
+Epoch 8/10 | train | Loss: 0.5852 | Acc: 0.7734
+Epoch 8/10 |  val  | Loss: 0.7307 | Acc: 0.7131
+Epoch 9/10 | train | Loss: 0.5443 | Acc: 0.7891
+Epoch 9/10 |  val  | Loss: 0.7471 | Acc: 0.7139
+Epoch 10/10 | train | Loss: 0.5018 | Acc: 0.8054
+Epoch 10/10 |  val  | Loss: 0.7809 | Acc: 0.7251
+Work Done. Total cost: 960.734295129776 s
+using  cuda
+obses: 4336 samples: 40048
+north: 10465
+south: 9240
+west : 10651
+east : 8133
+bcity: 1559
+option: 3 load prop: 1.0
+Traceback (most recent call last):
+  File "main.py", line 26, in <module>
+    main(vars(config))
+  File "main.py", line 22, in main
+    train(config)
+  File "/home/l/liuxiao/CS5446_Project/my-works/imitation_learning/train.py", line 133, in train
+    num_epochs=num_epochs, device=device, save_every=save_every)
+  File "/home/l/liuxiao/CS5446_Project/my-works/imitation_learning/train.py", line 48, in train_model
+    policy = net(states)
+  File "/home/l/liuxiao/anaconda3/envs/luxai/lib/python3.7/site-packages/torch/nn/modules/module.py", line 727, in _call_impl
+    result = self.forward(*input, **kwargs)
+  File "/home/l/liuxiao/CS5446_Project/my-works/imitation_learning/model.py", line 163, in forward
+    x = self.linear2(x)
+  File "/home/l/liuxiao/anaconda3/envs/luxai/lib/python3.7/site-packages/torch/nn/modules/module.py", line 727, in _call_impl
+    result = self.forward(*input, **kwargs)
+  File "/home/l/liuxiao/anaconda3/envs/luxai/lib/python3.7/site-packages/torch/nn/modules/linear.py", line 93, in forward
+    return F.linear(input, self.weight, self.bias)
+  File "/home/l/liuxiao/anaconda3/envs/luxai/lib/python3.7/site-packages/torch/nn/functional.py", line 1690, in linear
+    ret = torch.addmm(bias, input, weight.t())
+RuntimeError: mat1 dim 1 must match mat2 dim 0
+using  cuda
+obses: 4336 samples: 40048
+north: 10465
+south: 9240
+west : 10651
+east : 8133
+bcity: 1559
+option: 3 load prop: 1.0
+Epoch 1/10 | train | Loss: 1.5634 | Acc: 0.3925
+Epoch 1/10 |  val  | Loss: 1.0172 | Acc: 0.5810
+Epoch 2/10 | train | Loss: 0.9429 | Acc: 0.6184
+Epoch 2/10 |  val  | Loss: 0.8985 | Acc: 0.6242
+Epoch 3/10 | train | Loss: 0.8128 | Acc: 0.6755
+Epoch 3/10 |  val  | Loss: 0.8256 | Acc: 0.6639
+Epoch 4/10 | train | Loss: 0.7433 | Acc: 0.7026
+Epoch 4/10 |  val  | Loss: 0.7629 | Acc: 0.6949
+Epoch 5/10 | train | Loss: 0.6850 | Acc: 0.7283
+Epoch 5/10 |  val  | Loss: 0.7578 | Acc: 0.6986
+Epoch 6/10 | train | Loss: 0.6410 | Acc: 0.7456
+Epoch 6/10 |  val  | Loss: 0.7552 | Acc: 0.6981
+Epoch 7/10 | train | Loss: 0.5914 | Acc: 0.7672
+Epoch 7/10 |  val  | Loss: 0.7753 | Acc: 0.7036
+Epoch 8/10 | train | Loss: 0.5483 | Acc: 0.7853
+Epoch 8/10 |  val  | Loss: 0.7446 | Acc: 0.7283
+Epoch 9/10 | train | Loss: 0.5056 | Acc: 0.8037
+Epoch 9/10 |  val  | Loss: 0.7627 | Acc: 0.7303
+Epoch 10/10 | train | Loss: 0.4620 | Acc: 0.8207
+Epoch 10/10 |  val  | Loss: 0.7345 | Acc: 0.7251
+Work Done. Total cost: 1752.1143925189972 s
+using  cuda
+obses: 4336 samples: 40048
+north: 10465
+south: 9240
+west : 10651
+east : 8133
+bcity: 1559
+option: 4 load prop: 1.0
+Traceback (most recent call last):
+  File "main.py", line 26, in <module>
+    main(vars(config))
+  File "main.py", line 22, in main
+    train(config)
+  File "/home/l/liuxiao/CS5446_Project/my-works/imitation_learning/train.py", line 133, in train
+    num_epochs=num_epochs, device=device, save_every=save_every)
+  File "/home/l/liuxiao/CS5446_Project/my-works/imitation_learning/train.py", line 48, in train_model
+    policy = net(states)
+  File "/home/l/liuxiao/anaconda3/envs/luxai/lib/python3.7/site-packages/torch/nn/modules/module.py", line 727, in _call_impl
+    result = self.forward(*input, **kwargs)
+  File "/home/l/liuxiao/CS5446_Project/my-works/imitation_learning/model.py", line 170, in forward
+    x = self.linear2(x)
+  File "/home/l/liuxiao/anaconda3/envs/luxai/lib/python3.7/site-packages/torch/nn/modules/module.py", line 727, in _call_impl
+    result = self.forward(*input, **kwargs)
+  File "/home/l/liuxiao/anaconda3/envs/luxai/lib/python3.7/site-packages/torch/nn/modules/linear.py", line 93, in forward
+    return F.linear(input, self.weight, self.bias)
+  File "/home/l/liuxiao/anaconda3/envs/luxai/lib/python3.7/site-packages/torch/nn/functional.py", line 1690, in linear
+    ret = torch.addmm(bias, input, weight.t())
+RuntimeError: mat1 dim 1 must match mat2 dim 0
+using  cuda
+obses: 4336 samples: 40048
+north: 10465
+south: 9240
+west : 10651
+east : 8133
+bcity: 1559
+option: 4 load prop: 1.0
+Epoch 1/10 | train | Loss: 1.7804 | Acc: 0.3326
+Epoch 1/10 |  val  | Loss: 1.1461 | Acc: 0.5166
+Epoch 2/10 | train | Loss: 0.9845 | Acc: 0.5961
+Epoch 2/10 |  val  | Loss: 0.8595 | Acc: 0.6544
+Epoch 3/10 | train | Loss: 0.8208 | Acc: 0.6666
+Epoch 3/10 |  val  | Loss: 0.8116 | Acc: 0.6584
+Epoch 4/10 | train | Loss: 0.7423 | Acc: 0.7035
+Epoch 4/10 |  val  | Loss: 0.7625 | Acc: 0.6881
+Epoch 5/10 | train | Loss: 0.6908 | Acc: 0.7239
+Epoch 5/10 |  val  | Loss: 0.7689 | Acc: 0.6984
+Epoch 6/10 | train | Loss: 0.6376 | Acc: 0.7479
+Epoch 6/10 |  val  | Loss: 0.7700 | Acc: 0.6931
+Epoch 7/10 | train | Loss: 0.5961 | Acc: 0.7663
+Epoch 7/10 |  val  | Loss: 0.7585 | Acc: 0.7064
+Epoch 8/10 | train | Loss: 0.5554 | Acc: 0.7851
+Epoch 8/10 |  val  | Loss: 0.7243 | Acc: 0.7223
+Epoch 9/10 | train | Loss: 0.5108 | Acc: 0.8016
+Epoch 9/10 |  val  | Loss: 0.7484 | Acc: 0.7144
+Epoch 10/10 | train | Loss: 0.5764 | Acc: 0.7762
+Epoch 10/10 |  val  | Loss: 0.7852 | Acc: 0.7141
+Work Done. Total cost: 4054.280335664749 s
+using  cuda
+obses: 4336 samples: 40048
+north: 10465
+south: 9240
+west : 10651
+east : 8133
+bcity: 1559
+option: 3 load prop: 1.0
+Traceback (most recent call last):
+  File "main.py", line 26, in <module>
+    main(vars(config))
+  File "main.py", line 22, in main
+    train(config)
+  File "/home/l/liuxiao/CS5446_Project/my-works/imitation_learning/train.py", line 133, in train
+    num_epochs=num_epochs, device=device, save_every=save_every)
+  File "/home/l/liuxiao/CS5446_Project/my-works/imitation_learning/train.py", line 48, in train_model
+    policy = net(states)
+  File "/home/l/liuxiao/anaconda3/envs/luxai/lib/python3.7/site-packages/torch/nn/modules/module.py", line 727, in _call_impl
+    result = self.forward(*input, **kwargs)
+  File "/home/l/liuxiao/CS5446_Project/my-works/imitation_learning/model.py", line 170, in forward
+    x = self.linear2(x)
+  File "/home/l/liuxiao/anaconda3/envs/luxai/lib/python3.7/site-packages/torch/nn/modules/module.py", line 727, in _call_impl
+    result = self.forward(*input, **kwargs)
+  File "/home/l/liuxiao/anaconda3/envs/luxai/lib/python3.7/site-packages/torch/nn/modules/linear.py", line 93, in forward
+    return F.linear(input, self.weight, self.bias)
+  File "/home/l/liuxiao/anaconda3/envs/luxai/lib/python3.7/site-packages/torch/nn/functional.py", line 1690, in linear
+    ret = torch.addmm(bias, input, weight.t())
+RuntimeError: mat1 dim 1 must match mat2 dim 0
+using  cuda
+obses: 4336 samples: 40048
+north: 10465
+south: 9240
+west : 10651
+east : 8133
+bcity: 1559
+option: 3 load prop: 1.0
+Epoch 1/10 | train | Loss: 1.6155 | Acc: 0.4006
+Epoch 1/10 |  val  | Loss: 1.0345 | Acc: 0.5743
+Epoch 2/10 | train | Loss: 0.9003 | Acc: 0.6345
+Epoch 2/10 |  val  | Loss: 0.8782 | Acc: 0.6474
+Epoch 3/10 | train | Loss: 0.7876 | Acc: 0.6860
+Epoch 3/10 |  val  | Loss: 0.7745 | Acc: 0.6869
+Epoch 4/10 | train | Loss: 0.7135 | Acc: 0.7132
+Epoch 4/10 |  val  | Loss: 0.7751 | Acc: 0.6879
+Epoch 5/10 | train | Loss: 0.6560 | Acc: 0.7403
+Epoch 5/10 |  val  | Loss: 0.7540 | Acc: 0.7166
+Epoch 6/10 | train | Loss: 0.6104 | Acc: 0.7610
+Epoch 6/10 |  val  | Loss: 0.7417 | Acc: 0.7059
+Epoch 7/10 | train | Loss: 0.5550 | Acc: 0.7816
+Epoch 7/10 |  val  | Loss: 0.7354 | Acc: 0.7151
+Epoch 8/10 | train | Loss: 0.5134 | Acc: 0.7978
+Epoch 8/10 |  val  | Loss: 0.7682 | Acc: 0.7241
+Epoch 9/10 | train | Loss: 0.4637 | Acc: 0.8198
+Epoch 9/10 |  val  | Loss: 0.7842 | Acc: 0.7278
+Epoch 10/10 | train | Loss: 0.4209 | Acc: 0.8384
+Epoch 10/10 |  val  | Loss: 0.8175 | Acc: 0.7303
+Work Done. Total cost: 4135.29052066803 s
+using  cuda
+obses: 4336 samples: 40048
+north: 10465
+south: 9240
+west : 10651
+east : 8133
+bcity: 1559
+option: 3 load prop: 1.0
+Traceback (most recent call last):
+  File "main.py", line 26, in <module>
+    main(vars(config))
+  File "main.py", line 22, in main
+    train(config)
+  File "/home/l/liuxiao/CS5446_Project/my-works/imitation_learning/train.py", line 133, in train
+    num_epochs=num_epochs, device=device, save_every=save_every)
+  File "/home/l/liuxiao/CS5446_Project/my-works/imitation_learning/train.py", line 48, in train_model
+    policy = net(states)
+  File "/home/l/liuxiao/anaconda3/envs/luxai/lib/python3.7/site-packages/torch/nn/modules/module.py", line 727, in _call_impl
+    result = self.forward(*input, **kwargs)
+  File "/home/l/liuxiao/CS5446_Project/my-works/imitation_learning/model.py", line 168, in forward
+    x = self.encode(input)
+  File "/home/l/liuxiao/CS5446_Project/my-works/imitation_learning/model.py", line 140, in encode
+    x, distance_m, map_m = input[:,:22], input[:,22], input[:,21]
+IndexError: index 22 is out of bounds for dimension 1 with size 20

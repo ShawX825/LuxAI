@@ -2,7 +2,7 @@ from torch import nn
 import torch
 import torch.nn.functional as F
 
-CHANNEL = 21
+CHANNEL = 20
 
 class BasicConv2d(nn.Module):
     def __init__(self, input_dim, output_dim, kernel_size, bn):
@@ -102,6 +102,20 @@ opt = {
         'avg_pool': nn.AvgPool2d(kernel_size=3,stride=2,padding=1),
         'dem': 8,
         'nonlinearity': nn.ReLU()
+    },
+    3: {'conv_layers': [[CHANNEL,64,3,1,1],[64,64,3,1,1],[64,128,3,1,1],\
+        [128,128,3,1,1],[128,256,3,1,1],[256,256,3,1,1]],
+        'conv_1': nn.Conv2d(64,128,3,2,1),
+        'avg_pool': nn.AvgPool2d(kernel_size=3,stride=2,padding=1),
+        'dem': 8,
+        'nonlinearity': nn.LeakyReLU()
+    },
+    4: {'conv_layers': [[CHANNEL,64,3,1,1],[64,64,3,1,1],[64,128,3,1,1],\
+        [128,128,3,1,1],[128,256,3,1,1],[256,256,3,1,1],[256,512,3,1,1],[512,512,3,1,1]],
+        'conv_1': nn.Conv2d(64,128,3,2,1),
+        'avg_pool': nn.AvgPool2d(kernel_size=3,stride=2,padding=1),
+        'dem': 8,
+        'nonlinearity': nn.LeakyReLU()
     }
 }
 
@@ -123,19 +137,21 @@ class Autoencoder(nn.Module):
         self.relu = opt[option]['nonlinearity']
     
     def encode(self, input):
-        x, distance_m, map_m = input[:,:21], input[:,21], input[:,22]
-        distance_m = distance_m.unsqueeze(1)
-        map_m = map_m.unsqueeze(1)
+        #x, distance_m, map_m = input[:,:22], input[:,22], input[:,21]
+        #distance_m = distance_m.unsqueeze(1)
+        #map_m = map_m.unsqueeze(1)
         #x = self.relu(self.conv0(x))
-        #x = input
+        x = input
         for i in range(len(self.conv_layers)):
             x = self.relu(self.conv_skips[i](x) + self.conv_blocks[i](x))
+        
+        x = (x * input[:,:1]).view(x.size(0), x.size(1), -1).sum(-1) 
         #x = x * distance_m * map_m
-        x = self.relu(self.conv1(x))
-        x = self.avg_pool(x)
-        x = self.flatten(x)
-        x = self.dropout1(x)
-        x = self.linear1(x)
+        #x = self.relu(self.conv1(x))
+        #x = self.avg_pool(x)
+        #x = self.flatten(x)
+        #x = self.dropout2(x)
+        #x = self.linear1(x)
         return x 
     
     def decode(self, x):
@@ -148,7 +164,8 @@ class Autoencoder(nn.Module):
         return x
     
     def forward(self,input):
-        x = self.relu(self.encode(input))
+        #x = self.relu(self.encode(input))
+        x = self.encode(input)
         x = self.dropout2(x)
         x = self.linear2(x)
         return x

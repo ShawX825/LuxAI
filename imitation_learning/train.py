@@ -7,7 +7,7 @@ import numpy as np
 import os, time, datetime, json, pickle
 
 SEED = 42
-CHANNEL = 21
+CHANNEL = 20
 
 def set_seed(seed=42):
     np.random.seed(seed)
@@ -72,7 +72,7 @@ def train_model(net, model_path, dataloaders_dict, criterion,
                 }
             torch.save(checkpoint, os.path.join(model_path,'best_for_analysis.pt'))
 
-            traced = torch.jit.trace(net.cpu(), torch.rand(1, CHANNEL+2, 32, 32))
+            traced = torch.jit.trace(net.cpu(), torch.rand(1, CHANNEL, 32, 32))
             traced.save(os.path.join(model_path,'best.pth'))
             best_acc = epoch_acc
 
@@ -105,7 +105,7 @@ def train(config):
     model_path = 'model_checkpoints/{}'.format(st)
     os.makedirs(model_path)
 
-    episode_dir = '../data/episodes_top5' if config['mode'] != 'test' else '../data/episodes_test'
+    episode_dir = '../data/episodes_top5' if config['mode'] != 'test' else '../data/episodes_test1'
     obses, samples = create_dataset_from_json(episode_dir, load_prop=load_prop)
     u_labels = [sample[-1] for sample in samples]
     
@@ -122,7 +122,8 @@ def train(config):
     val_loader = DataLoader(LuxDataset(obses, val), batch_size=batch_size, shuffle=False,\
         num_workers=0, worker_init_fn=np.random.seed(SEED))
 
-    net = Autoencoder(input_shape=(CHANNEL,32,32),option=option).to(device)
+    net = Autoencoder(hidden_shape=256, input_shape=(CHANNEL,32,32),option=option).to(device)
+    #net = LuxNet().to(device)
     dataloaders_dict = {"train": train_loader, "val": val_loader}
     criterion = nn.CrossEntropyLoss()
     optimizer = torch.optim.AdamW(net.parameters(), lr=learning_rate)
