@@ -7,6 +7,8 @@ def parse_arg():
     parser.add_argument('--batch_size', type=int, default='64')
     parser.add_argument('--lr', type=float, default='0.001')
     parser.add_argument('--epoch', type=int, default=20)
+    parser.add_argument('--device', type=str, default='cuda:0')
+    parser.add_argument('--map',type=int, default=32)
     parser.add_argument('--option', type=int, default=0)
     parser.add_argument('--save_every', type=int, default=5)
     parser.add_argument('--load_prop', type=float, default=0.1)

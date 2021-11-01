@@ -6,7 +6,10 @@ from sklearn.model_selection import train_test_split
 
 
 #TEAM = ['Toad Brigade', 'RL is all you need', 'Love Deluxe', 'Tigga', 'perspective']
-TEAM = ['Toad Brigade', 'RL is all you need']
+#TEAM = ['Toad Brigade', 'RL is all you need']
+#TEAM = ['Toad Brigade']
+#TEAM = ['RL is all you need']
+TEAM = ['Toad Brigade', 'RL is all you need', 'Love Deluxe']
 def to_label(action):
     strs = action.split(' ')
     unit_id = strs[1]
@@ -27,7 +30,7 @@ def depleted_resources(obs):
             return False
     return True
 
-def create_dataset_from_json(episode_dir, load_prop=0.1): 
+def create_dataset_from_json(episode_dir, load_prop=0.1, map_size=24): 
     obses = {}
     samples = []
     fpths = listdir(episode_dir)
@@ -40,8 +43,10 @@ def create_dataset_from_json(episode_dir, load_prop=0.1):
 
         eps_id = data['info']['EpisodeId']
         index = np.argmax([r or 0 for r in data['rewards']]) # winner index of current episode
-        if data['info']['TeamNames'][index] not in TEAM:
+        if data['info']['TeamNames'][index] not in TEAM or \
+            data['steps'][0][0]['observation']['width'] != map_size:
             continue
+
         for i in range(len(data['steps'])-1):
             if data['steps'][i][index]['status'] == 'ACTIVE':
                 actions = data['steps'][i+1][index]['action']
@@ -69,7 +74,7 @@ def create_dataset_from_json(episode_dir, load_prop=0.1):
 
     return obses, samples
 
-def make_input(obs, unit_id):
+def make_input(obs, unit_id, map_size):
     '''
     --G1(target unit):-- (abandoned)
     --for current (x,y), --
@@ -111,11 +116,11 @@ def make_input(obs, unit_id):
     '''
 
     width, height = obs['width'], obs['height']
-    x_shift = (32 - width) // 2
-    y_shift = (32 - height) // 2
+    #x_shift = (24 - width) // 2
+    #y_shift = (24 - height) // 2
     cities = {}
     
-    b = np.zeros((20, 32, 32), dtype=np.float32)
+    b = np.zeros((21, map_size, map_size), dtype=np.float32)
     pos_x, pos_y = 0, 0
     count_u, count_ct = 0, 0
 
@@ -127,8 +132,8 @@ def make_input(obs, unit_id):
         # identifier unit_type team unit_id pos_x pos_y cooldown wood coal uranium
         if input_identifier == 'u': 
             #count_u += 1
-            x = int(strs[4]) + x_shift
-            y = int(strs[5]) + y_shift
+            x = int(strs[4]) #+ x_shift
+            y = int(strs[5]) #+ y_shift
             wood = int(strs[7])
             coal = int(strs[8])
             uranium = int(strs[9])
@@ -153,8 +158,8 @@ def make_input(obs, unit_id):
             #count_ct += 1
             team = int(strs[1])
             city_id = strs[2]
-            x = int(strs[3]) + x_shift
-            y = int(strs[4]) + y_shift
+            x = int(strs[3]) #+ x_shift
+            y = int(strs[4]) #+ y_shift
             cooldown = float(strs[5])
 
             if unit_id == strs[3]+strs[4]:
@@ -162,25 +167,25 @@ def make_input(obs, unit_id):
             # idx 6:9 own citytiles
             # idx 9:12 adversary citytiles
             #idx = 6 or 8 (cooldown) + (team - obs['player']) % 2 * 3
-            idx = 8 + (team - obs['player']) % 2 * 2
-            #b[idx:idx + 3, x, y] =  (1, cities[city_id], cooldown / 6)
-            b[idx:idx + 2, x, y] =  (1, cities[city_id])
+            idx = 8 + (team - obs['player']) % 2 * 3
+            b[idx:idx + 3, x, y] =  (1, cities[city_id], cooldown / 6)
+            #b[idx:idx + 2, x, y] =  (1, cities[city_id])
 
         elif input_identifier == 'r':
             # Resources
             r_type = strs[1]
-            x = int(strs[2]) + x_shift
-            y = int(strs[3]) + y_shift
+            x = int(strs[2]) #+ x_shift
+            y = int(strs[3]) #+ y_shift
             amt = int(float(strs[4]))
-            b[{'wood': 12, 'coal': 13, 'uranium': 14}[r_type], x, y] = amt / 800
-            #b[{'wood': 14, 'coal': 15, 'uranium': 16}[r_type], x, y] = amt / 800
+            #b[{'wood': 12, 'coal': 13, 'uranium': 14}[r_type], x, y] = amt / 800
+            b[{'wood': 14, 'coal': 15, 'uranium': 16}[r_type], x, y] = amt / 800
 
         elif input_identifier == 'rp':
             # Research Points
             team = int(strs[1])
             rp = int(strs[2])
-            b[15 + (team - obs['player']) % 2, :] = min(rp, 200) / 200
-            #b[17 + (team - obs['player']) % 2, :] = min(rp, 200) / 200
+            #b[15 + (team - obs['player']) % 2, :] = min(rp, 200) / 200
+            b[17 + (team - obs['player']) % 2, :] = min(rp, 200) / 200
 
         elif input_identifier == 'c':
             # Cities
@@ -197,9 +202,9 @@ def make_input(obs, unit_id):
     #b[18, :] = count_ct / 100
 
     # Day/Night Cycle
-    b[17, :] = obs['step'] % 40 / 40
+    b[19, :] = obs['step'] % 40 / 40
     # Turns
-    b[18, :] = obs['step'] / 360
+    b[20, :] = obs['step'] / 360
     
     # Map Size
     #b[19, x_shift:32 - x_shift, y_shift:32 - y_shift] = 1
@@ -208,18 +213,19 @@ def make_input(obs, unit_id):
     #for i in range(len(distance_mask)):
     #    for j in range(len(distance_mask)):
     #        distance_mask[i, j] = 1 - ((i - pos_y)**2 + (j - pos_x)**2) / 2048
-    map_mask = np.zeros((32,32))
-    map_mask[x_shift:32 - x_shift, y_shift:32 - y_shift] = 1
+    #map_mask = np.zeros((32,32))
+    #map_mask[x_shift:32 - x_shift, y_shift:32 - y_shift] = 1
     #b[22, :] = distance_mask
-    b[19, :] = map_mask
+    #b[21, :] = map_mask
 
     return b
 
 
 class LuxDataset(Dataset):
-    def __init__(self, obses, samples):
+    def __init__(self, obses, samples, map_size):
         self.obses = obses
         self.samples = samples
+        self.map_size = map_size
         
     def __len__(self):
         return len(self.samples)
@@ -228,5 +234,5 @@ class LuxDataset(Dataset):
         obs_id, unit_id, action = self.samples[idx]
         obs = self.obses[obs_id]
         #state, distance_mask, map_mask = make_input(obs, unit_id)
-        state = make_input(obs, unit_id)
+        state = make_input(obs, unit_id, self.map_size)
         return state, action

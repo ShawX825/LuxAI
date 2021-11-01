@@ -2,7 +2,7 @@ from torch import nn
 import torch
 import torch.nn.functional as F
 
-CHANNEL = 20
+CHANNEL = 21
 
 class BasicConv2d(nn.Module):
     def __init__(self, input_dim, output_dim, kernel_size, bn):
@@ -109,31 +109,47 @@ opt = {
         'avg_pool': nn.AvgPool2d(kernel_size=3,stride=2,padding=1),
         'dem': 8,
         'nonlinearity': nn.LeakyReLU()
-    },
+    }, # best
     4: {'conv_layers': [[CHANNEL,64,3,1,1],[64,64,3,1,1],[64,128,3,1,1],\
         [128,128,3,1,1],[128,256,3,1,1],[256,256,3,1,1],[256,512,3,1,1],[512,512,3,1,1]],
         'conv_1': nn.Conv2d(64,128,3,2,1),
         'avg_pool': nn.AvgPool2d(kernel_size=3,stride=2,padding=1),
         'dem': 8,
         'nonlinearity': nn.LeakyReLU()
+    },
+    5: {'conv_layers': [[CHANNEL,32,3,1,1],[32,64,3,1,1],[64,128,3,1,1],\
+        [128,256,3,1,1],[256,512,3,1,1],[512,1024,3,1,1]],
+        'conv_1': nn.Conv2d(64,128,3,2,1),
+        'avg_pool': nn.AvgPool2d(kernel_size=3,stride=2,padding=1),
+        'dem': 8,
+        'nonlinearity': nn.LeakyReLU()
+    },
+    6: {'conv_layers': [[CHANNEL,64,3,1,1],[64,128,3,1,1],[128,256,3,1,1]],
+        'conv_1': nn.Conv2d(64,128,3,2,1),
+        'avg_pool': nn.AvgPool2d(kernel_size=3,stride=2,padding=1),
+        'dem': 8,
+        'nonlinearity': nn.LeakyReLU()
     }
+
 }
 
+
 class Autoencoder(nn.Module):
-    def __init__(self, input_shape=(CHANNEL,32,32), hidden_shape=512, num_action=5, option=0):
+    def __init__(self, input_shape=(CHANNEL,24,24), hidden_shape=512, num_action=5, option=0):
         super().__init__()
         self.in_channel, self.in_w, self.in_h = input_shape
         self.conv_layers = opt[option]['conv_layers']
+        self.hidden_shape = opt[option]['conv_layers'][-1][1]
         self.conv_skips, self.conv_blocks, self.in_feature = make_layers(input_shape, self.conv_layers)
-        self.conv0 = nn.Conv2d(self.in_channel,64,3,1,1)
-        self.conv1 = opt[option]['conv_1']
-        self.avg_pool = opt[option]['avg_pool']
-        self.linear1 = nn.Linear(self.in_feature//opt[option]['dem'], hidden_shape)
-        self.linear2 = nn.Linear(hidden_shape, self.in_feature)
+        #self.conv0 = nn.Conv2d(self.in_channel,64,3,1,1)
+        #self.conv1 = opt[option]['conv_1']
+        #self.avg_pool = opt[option]['avg_pool']
+        #self.linear1 = nn.Linear(self.in_feature//opt[option]['dem'], hidden_shape)
+        #self.linear2 = nn.Linear(hidden_shape, self.in_feature)
         self.dropout1 = nn.Dropout(p=0.5)
-        self.dropout2 = nn.Dropout(p=0.3)
-        self.linear_head = nn.Linear(hidden_shape, num_action)
-        self.flatten = nn.Flatten()
+        #self.dropout2 = nn.Dropout(p=0.3)
+        self.linear_head = nn.Linear(self.hidden_shape, num_action)
+        #self.flatten = nn.Flatten()
         self.relu = opt[option]['nonlinearity']
     
     def encode(self, input):
@@ -154,20 +170,20 @@ class Autoencoder(nn.Module):
         #x = self.linear1(x)
         return x 
     
-    def decode(self, x):
-        x = self.relu(x)
-        x = self.relu(self.linear2(x))
-        x = x.view(x.size(0),512,2,2)
-        for i in range(len(self.deconv_layers)-1):
-            x = self.relu(self.deconv_skips[i](x) + self.deconv_blocks[i](x))
-        x = self.deconv_skips[-1](x) + self.deconv_blocks[-1](x)
-        return x
+    #def decode(self, x):
+    #    x = self.relu(x)
+    #    x = self.relu(self.linear2(x))
+    #    x = x.view(x.size(0),512,2,2)
+    #    for i in range(len(self.deconv_layers)-1):
+    #        x = self.relu(self.deconv_skips[i](x) + self.deconv_blocks[i](x))
+    #    x = self.deconv_skips[-1](x) + self.deconv_blocks[-1](x)
+    #    return x
     
     def forward(self,input):
         #x = self.relu(self.encode(input))
         x = self.encode(input)
-        x = self.dropout2(x)
-        x = self.linear2(x)
+        x = self.dropout1(x)
+        x = self.linear_head(x)
         return x
 
     

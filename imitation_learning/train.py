@@ -7,7 +7,7 @@ import numpy as np
 import os, time, datetime, json, pickle
 
 SEED = 42
-CHANNEL = 20
+CHANNEL = 21
 
 def set_seed(seed=42):
     np.random.seed(seed)
@@ -19,9 +19,10 @@ def set_seed(seed=42):
     torch.backends.cudnn.deterministic = True
 
 def train_model(net, model_path, dataloaders_dict, criterion,
- optimizer, num_epochs, device, save_every):
+ optimizer, num_epochs, device, save_every, map_size):
 
     best_acc = 0.0
+    best_loss = 2.0
     records = []
 
     for epoch in range(num_epochs):
@@ -35,6 +36,8 @@ def train_model(net, model_path, dataloaders_dict, criterion,
                 
             epoch_loss = 0.0
             epoch_acc = 0
+            action_acc = [0]*5
+            action_count = [0]*5
             
             dataloader = dataloaders_dict[phase]
             for item in dataloader:
@@ -55,26 +58,32 @@ def train_model(net, model_path, dataloaders_dict, criterion,
 
                     epoch_loss += loss.item() * len(policy)
                     epoch_acc += torch.sum(preds == actions.data)
+                    action_acc = [action_acc[i] + sum(torch.logical_and(preds == actions.data,preds==i)) for i in range(5)]
+                    action_count = [action_count[i] + sum(actions.data == i) for i in range(5)]
 
             data_size = len(dataloader.dataset)
             epoch_loss = epoch_loss / data_size
             epoch_acc = epoch_acc.double() / data_size
-
-            print(f'Epoch {epoch + 1}/{num_epochs} | {phase:^5} | Loss: {epoch_loss:.4f} | Acc: {epoch_acc:.4f}')
+            action_acc = [action_acc[i] / action_count[i] for i in range(5)]
+            print(f'Epoch {epoch + 1}/{num_epochs} | {phase:^5} | Loss: {epoch_loss:.4f} | Acc: {epoch_acc:.4f}'+
+            f'| N: {action_acc[0]:.4f} | S: {action_acc[1]:.4f} | W: {action_acc[2]:.4f} | E: {action_acc[3]:.4f} |'+
+            f'BC: {action_acc[4]:.4f}'
+            )
+                
             records.extend([epoch_loss, epoch_acc])
             
-        if epoch_acc > best_acc:
+        if epoch_loss < best_loss:
             checkpoint = {
-                'epoch': epoch,
-                'state_dict': net.state_dict(),
-                'optimizer_state_dict': optimizer.state_dict(),
-                'records': np.array(records)
+                #'epoch': epoch,
+                'state_dict': net.state_dict()
+                #'optimizer_state_dict': optimizer.state_dict(),
+                #'records': records
                 }
             torch.save(checkpoint, os.path.join(model_path,'best_for_analysis.pt'))
 
-            traced = torch.jit.trace(net.cpu(), torch.rand(1, CHANNEL, 32, 32))
+            traced = torch.jit.trace(net.cpu(), torch.rand(1, CHANNEL, map_size, map_size))
             traced.save(os.path.join(model_path,'best.pth'))
-            best_acc = epoch_acc
+            best_loss = epoch_loss
 
         
         if epoch % save_every == 0 or epoch + 1 == num_epochs:
@@ -82,14 +91,15 @@ def train_model(net, model_path, dataloaders_dict, criterion,
 	        'epoch': epoch,
 	        'state_dict': net.state_dict(),
 	        'optimizer_state_dict': optimizer.state_dict(),
-            'records': np.array(records)
+            'records': records
             }
             torch.save(checkpoint, os.path.join(model_path,'{}.pt'.format(epoch)))
         
     return records
 
 def train(config):
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+    device = torch.device(config['device'] if torch.cuda.is_available() else "cpu")
     print('using ', device)
 
     set_seed()
@@ -100,13 +110,14 @@ def train(config):
     save_every = config['save_every']
     num_epochs = config['epoch']
     option = config['option']
+    map_size = config['map']
 
     st = datetime.datetime.fromtimestamp(time.time()).strftime('%Y%m%d%H%M%S')
     model_path = 'model_checkpoints/{}'.format(st)
     os.makedirs(model_path)
 
     episode_dir = '../data/episodes_top5' if config['mode'] != 'test' else '../data/episodes_test1'
-    obses, samples = create_dataset_from_json(episode_dir, load_prop=load_prop)
+    obses, samples = create_dataset_from_json(episode_dir, load_prop=load_prop, map_size=map_size)
     u_labels = [sample[-1] for sample in samples]
     
     u_actions = ['north', 'south', 'west', 'east', 'bcity']
@@ -114,15 +125,15 @@ def train(config):
 
     for value, count in zip(*np.unique(u_labels, return_counts=True)):
         print(f'{u_actions[value]:^5}: {count:>3}')
-
+    
     print('option:', option, 'load prop:', load_prop)
     train, val = train_test_split(samples, test_size=0.1, random_state=42)
-    train_loader = DataLoader(LuxDataset(obses, train), batch_size=batch_size, shuffle=True,\
+    train_loader = DataLoader(LuxDataset(obses, train, map_size), batch_size=batch_size, shuffle=True,\
         num_workers=0, worker_init_fn=np.random.seed(SEED))
-    val_loader = DataLoader(LuxDataset(obses, val), batch_size=batch_size, shuffle=False,\
+    val_loader = DataLoader(LuxDataset(obses, val, map_size), batch_size=batch_size, shuffle=False,\
         num_workers=0, worker_init_fn=np.random.seed(SEED))
 
-    net = Autoencoder(hidden_shape=256, input_shape=(CHANNEL,32,32),option=option).to(device)
+    net = Autoencoder(hidden_shape=1024, input_shape=(CHANNEL,map_size,map_size),option=option).to(device)
     #net = LuxNet().to(device)
     dataloaders_dict = {"train": train_loader, "val": val_loader}
     criterion = nn.CrossEntropyLoss()
@@ -130,10 +141,10 @@ def train(config):
 
     time_start = time.time()
     records = train_model(net, model_path ,dataloaders_dict, criterion, optimizer,
-        num_epochs=num_epochs, device=device, save_every=save_every)
+        num_epochs=num_epochs, device=device, save_every=save_every, map_size=map_size)
     time_end = time.time()
     
-    np.savetxt(os.path.join(model_path,'records.csv'), np.array(records), delimiter=",")
+    #np.savetxt(os.path.join(model_path,'records.csv'), np.array(records), delimiter=",")
     with open(os.path.join(model_path,'config.json'), 'w') as f:
         json.dump(config, f)
     print('Work Done. Total cost:',time_end - time_start, 's')
