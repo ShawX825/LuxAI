@@ -73,18 +73,16 @@ def train_model(net, model_path, dataloaders_dict, criterion,
             records.extend([epoch_loss, epoch_acc])
             
         if epoch_loss < best_loss:
-            checkpoint = {
-                #'epoch': epoch,
-                'state_dict': net.state_dict()
-                #'optimizer_state_dict': optimizer.state_dict(),
-                #'records': records
-                }
-            torch.save(checkpoint, os.path.join(model_path,'best_for_analysis.pt'))
 
             traced = torch.jit.trace(net.cpu(), torch.rand(1, CHANNEL, map_size, map_size))
-            traced.save(os.path.join(model_path,'best.pth'))
+            traced.save(os.path.join(model_path,'best_loss.pth'))
             best_loss = epoch_loss
 
+        if epoch_acc > best_acc:
+
+            traced = torch.jit.trace(net.cpu(), torch.rand(1, CHANNEL, map_size, map_size))
+            traced.save(os.path.join(model_path,'best_acc.pth'))
+            best_acc = epoch_acc
         
         if epoch % save_every == 0 or epoch + 1 == num_epochs:
             checkpoint = {
