@@ -1,28 +1,45 @@
 from torch import nn
 import torch
+import random
 import torch.nn.functional as F
 
 CHANNEL = 21
-Transition = collections.namedtuple('Transition', ('state', 'action', 'reward', 'next_state', 'done'))
+Transition = collections.namedtuple('Transition', \
+('game_state', 'obs','action', 'reward', 'next_game_state', 'next_obs', 'done'))
+T = collections.namedtuple('T', ('state', 'action', 'reward', 'next_state', 'done'))
 
 class ReplayBuffer():
     def __init__(self, buffer_limit=buffer_limit):
         self.buffer = collections.deque(maxlen=buffer_limit)
 
-    def push(self, transition):
-        self.buffer.append(transition)
+    def push(self, t):
+        states, next_states, dones = [], [], []
+        player = t.game_state.players[t.obs.player]
+        next_player = t.next_game_state.players[t.next_obs.player]
+        num = len(t.actions)
+        alive_units = [unit for unit in player.units if unit in next_player.units]
+        for unit in player.units:
+            states.append(make_input(t.obs, unit.id))
+            if unit in next_player.units:
+                next_states.append(make_input(t.next_obs, unit.id))
+                dones.append(0)
+            else:
+                next_states.append(make_input(t.obs, unit.id))
+                dones.append(1)
+
+        transitions = list(zip(states,t.action,[t.reward]*num,next_states,dones))
+
+        self.buffer.extend(transitions)
     
-    def sample(self, batch_size):
-        
+    def sample(self, batch_size, device):
         batch_trans = random.sample(self.buffer, batch_size)
-        
-        batch_trans = Transition(*zip(*batch_trans))
-        
+        batch_trans = T(*zip(*batch_trans))
+
         states = torch.tensor(batch_trans.state, dtype=torch.float, device=device)
-        actions = torch.tensor(batch_trans.action, dtype=torch.long, device=device)
-        rewards = torch.tensor(batch_trans.reward, dtype=torch.float, device=device)
+        actions = torch.tensor(batch_trans.action, dtype=torch.long, device=device).unsqueeze(1)
+        rewards = torch.tensor(batch_trans.reward, dtype=torch.float, device=device).unsqueeze(1)
         next_states = torch.tensor(batch_trans.next_state, dtype=torch.float, device=device)
-        dones = torch.tensor(batch_trans.done, dtype=torch.float, device=device)
+        dones = torch.tensor(batch_trans.done, dtype=torch.float, device=device).unsqueeze(1)
         
         return (states, actions, rewards, next_states, dones)
 
@@ -88,8 +105,7 @@ class QNet(nn.Module):
     def encode(self, input):
         x = input
         for i in range(len(self.conv_layers)):
-            x = self.relu(self.conv_skips[i](x) + self.conv_blocks[i](x))
-        
+            x = self.relu(self.conv_skips[i](x) + self.conv_blocks[i](x))  
         x = (x * input[:,:1]).view(x.size(0), x.size(1), -1).sum(-1) 
         return x 
 
@@ -99,3 +115,177 @@ class QNet(nn.Module):
         x = self.linear_head(x)
         return x
 
+
+def make_input(obs, unit_id):
+
+    width, height = obs['width'], obs['height']
+    cities = {}
+    
+    b = np.zeros((21, width, width), dtype=np.float32)
+    pos_x, pos_y = 0, 0
+    count_u, count_ct = 0, 0
+
+    for update in obs['updates']:
+        strs = update.split(' ')
+        input_identifier = strs[0]
+        
+        # example: 'u 0 0 u_11 2 26 0 100 0 0'
+        if input_identifier == 'u': 
+            #count_u += 1
+            x = int(strs[4]) #+ x_shift
+            y = int(strs[5]) #+ y_shift
+            wood = int(strs[7])
+            coal = int(strs[8])
+            uranium = int(strs[9])
+
+            if unit_id == strs[3]:
+                pos_x, pos_y = x, y
+                # Position and Cargo
+                b[:2, x, y] = (1, (wood + coal + uranium) / 100) 
+            #else:
+            # Units
+            team = int(strs[2])
+            cooldown = float(strs[6])
+
+            idx = 2 + (team - obs['player']) % 2 * 3 
+            b[idx:idx + 3, x, y] = (1, cooldown / 6, (wood + coal + uranium) / 100)
+
+        elif input_identifier == 'ct':
+            # CityTiles
+            team = int(strs[1])
+            city_id = strs[2]
+            x = int(strs[3]) #+ x_shift
+            y = int(strs[4]) #+ y_shift
+            cooldown = float(strs[5])
+
+            if unit_id == strs[3]+strs[4]:
+                pos_x, pos_y = x, y
+
+            idx = 8 + (team - obs['player']) % 2 * 3
+            b[idx:idx + 3, x, y] =  (1, cities[city_id], cooldown / 6)
+
+        elif input_identifier == 'r':
+            # Resources
+            r_type = strs[1]
+            x = int(strs[2]) #+ x_shift
+            y = int(strs[3]) #+ y_shift
+            amt = int(float(strs[4]))
+            #b[{'wood': 12, 'coal': 13, 'uranium': 14}[r_type], x, y] = amt / 800
+            b[{'wood': 14, 'coal': 15, 'uranium': 16}[r_type], x, y] = amt / 800
+
+        elif input_identifier == 'rp':
+            # Research Points
+            team = int(strs[1])
+            rp = int(strs[2])
+            #b[15 + (team - obs['player']) % 2, :] = min(rp, 200) / 200
+            b[17 + (team - obs['player']) % 2, :] = min(rp, 200) / 200
+
+        elif input_identifier == 'c':
+            # Cities
+            city_id = strs[2]
+            fuel = float(strs[3])
+            lightupkeep = float(strs[4])
+            cities[city_id] = min(fuel / lightupkeep, 10) / 10
+
+    # Day/Night Cycle
+    b[19, :] = obs['step'] % 40 / 40
+    # Turns
+    b[20, :] = obs['step'] / 360
+
+    return b
+
+
+def act(input, epsilon=0.0):
+    if not isinstance(input, torch.FloatTensor):
+        input = torch.from_numpy(input).float().unsqueeze(0).to(device)
+    if random.random() < epsilon:
+        return random.randint(0, self.num_actions-1)
+    else:
+        return torch.argmax(self.forward(input)).item()
+
+def in_city(pos):    
+    try:
+        city = game_state.map.get_cell_by_pos(pos).citytile
+        return city is not None and city.team == game_state.id
+    except:
+        return False
+
+
+def call_func(obj, method, args=[]):
+    return getattr(obj, method)(*args)
+
+unit_actions = [('move', 'n'), ('move', 's'), ('move', 'w'), ('move', 'e'), ('build_city',)]
+def get_action(policy, unit, dest):
+    for label in np.argsort(policy)[::-1]:
+        act = unit_actions[label]
+        pos = unit.pos.translate(act[-1], 1) or unit.pos
+        if pos not in dest or in_city(pos):
+            return call_func(unit, *act), pos 
+            
+    return unit.move('c'), unit.pos
+
+def agent(observation, game_state, model, epsilon, num_action):
+    
+    #game_state = get_game_state(observation)    
+    player = game_state.players[observation.player]
+    actions = []
+    #width =  observation['width']
+    #model = models[width]
+    
+    # City Actions
+    unit_count = len(player.units)
+    for city in player.cities.values():
+        for city_tile in city.citytiles:
+            if city_tile.can_act():
+                if unit_count < player.city_tile_count: 
+                    actions.append(city_tile.build_worker())
+                    unit_count += 1
+                elif not player.researched_uranium():
+                    actions.append(city_tile.research())
+                    player.research_points += 1
+    
+    # Worker Actions
+    dest = []
+    for unit in player.units:
+        if unit.can_act() and (game_state.turn % 40 < 30 or not in_city(unit.pos)):
+            
+            # with probability epsilon to select a random action (explore)
+            if random.random() < epsilon:
+                policy = random.shuffle([i for i in range(num_action)])
+
+            else: # exploit
+                state = make_input(observation, unit.id)
+                with torch.no_grad():
+                    p = model(torch.from_numpy(state).unsqueeze(0))
+
+                policy = p.squeeze(0).numpy()
+
+            action, pos = get_action(policy, unit, dest)
+            actions.append(action)
+            dest.append(pos)
+
+    return actions
+
+def compute_loss(model, target, states, actions, rewards, next_states, dones):
+    
+    now_values = model(states).gather(1, actions)
+    max_next_values = torch.max(target(next_states),1)[0].detach()[:,None]
+    
+    loss = F.smooth_l1_loss(now_values, rewards + (gamma * max_next_values)*(1-dones))
+    
+    return loss
+
+def optimize(model, target, memory, optimizer, device):
+    '''
+    Optimize the model for a sampled batch with a length of `batch_size`
+    '''
+    batch = memory.sample(batch_size) 
+    loss = compute_loss(model, target, *batch)
+    optimizer.zero_grad()
+    loss.backward()
+    optimizer.step()
+    return loss
+
+def compute_epsilon(episode):
+    epsilon = min_epsilon + (max_epsilon - min_epsilon) * math.exp(-1. * episode / epsilon_decay)
+    return epsilon

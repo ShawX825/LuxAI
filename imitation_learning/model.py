@@ -129,10 +129,39 @@ opt = {
         'avg_pool': nn.AvgPool2d(kernel_size=3,stride=2,padding=1),
         'dem': 8,
         'nonlinearity': nn.LeakyReLU()
+    },
+    7: {'conv_layers': [[CHANNEL,32,3,1,1],[32,64,3,1,1],[64,128,3,1,1],[128,256,3,1,1]],
+        'conv_1': nn.Conv2d(64,128,3,2,1),
+        'avg_pool': nn.AvgPool2d(kernel_size=3,stride=2,padding=1),
+        'dem': 8,
+        'nonlinearity': nn.LeakyReLU()
+    },
+    8: {'conv_layers': [[CHANNEL,64,3,1,1],[64,64,3,1,1],[64,128,3,1,1],[128,256,3,1,1]],
+        'conv_1': nn.Conv2d(64,128,3,2,1),
+        'avg_pool': nn.AvgPool2d(kernel_size=3,stride=2,padding=1),
+        'dem': 8,
+        'nonlinearity': nn.LeakyReLU()
+    },
+    9: {'conv_layers': [[CHANNEL,64,3,1,1],[64,128,3,1,1],[128,128,3,1,1],[128,256,3,1,1]],
+        'conv_1': nn.Conv2d(64,128,3,2,1),
+        'avg_pool': nn.AvgPool2d(kernel_size=3,stride=2,padding=1),
+        'dem': 8,
+        'nonlinearity': nn.LeakyReLU()
+    },
+    10: {'conv_layers': [[CHANNEL,64,3,1,1],[64,128,3,1,1],[128,256,3,1,1],[256,256,3,1,1]],
+        'conv_1': nn.Conv2d(64,128,3,2,1),
+        'avg_pool': nn.AvgPool2d(kernel_size=3,stride=2,padding=1),
+        'dem': 8,
+        'nonlinearity': nn.LeakyReLU()
+    },
+    11: {'conv_layers': [[CHANNEL,64,3,1,1],[64,64,3,1,1],[64,128,3,1,1],[128,128,3,1,1]],
+        'conv_1': nn.Conv2d(64,128,3,2,1),
+        'avg_pool': nn.AvgPool2d(kernel_size=3,stride=2,padding=1),
+        'dem': 8,
+        'nonlinearity': nn.LeakyReLU()
     }
 
 }
-
 
 class Autoencoder(nn.Module):
     def __init__(self, input_shape=(CHANNEL,24,24), hidden_shape=512, num_action=5, option=0):

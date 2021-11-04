@@ -5,11 +5,15 @@ from torch.utils.data import Dataset
 from sklearn.model_selection import train_test_split
 
 
+# 12: TB > RL > Tigga > P > LD
+# 16: TB > RL > P > LD > Tigga
+# 24: TB > P > LD > RL > Tigga
+# 32: TB > LD > P > RL > Tigga
+
 #TEAM = ['Toad Brigade', 'RL is all you need', 'Love Deluxe', 'Tigga', 'perspective']
 #TEAM = ['Toad Brigade', 'RL is all you need']
 #TEAM = ['Toad Brigade']
 #TEAM = ['RL is all you need']
-TEAM = ['Toad Brigade', 'RL is all you need', 'Love Deluxe']
 def to_label(action):
     strs = action.split(' ')
     unit_id = strs[1]
@@ -36,7 +40,9 @@ def create_dataset_from_json(episode_dir, load_prop=0.1, map_size=24):
     fpths = listdir(episode_dir)
     _, fpths = train_test_split(fpths,test_size=load_prop) if load_prop < 1 else (None, fpths)
     
-
+    #TEAM = ['Toad Brigade', 'RL is all you need', 'Love Deluxe']
+    TEAM = ['Toad Brigade']
+    #TEAM = ['Toad Brigade', 'RL is all you need']
     for fp in fpths:
         with open(os.path.join(episode_dir,fp), 'r') as f:
             data = json.load(f)
@@ -143,7 +149,7 @@ def make_input(obs, unit_id, map_size):
                 # Position and Cargo
                 b[:2, x, y] = (1, (wood + coal + uranium) / 100) 
             #else:
-            # Units
+                # Units
             team = int(strs[2])
             cooldown = float(strs[6])
 
