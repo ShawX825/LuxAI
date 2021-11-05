@@ -2,6 +2,10 @@ from torch import nn
 import torch
 import random
 import torch.nn.functional as F
+import collections
+import math
+import numpy as np
+from lux.game import Game
 
 CHANNEL = 21
 Transition = collections.namedtuple('Transition', \
@@ -9,14 +13,14 @@ Transition = collections.namedtuple('Transition', \
 T = collections.namedtuple('T', ('state', 'action', 'reward', 'next_state', 'done'))
 
 class ReplayBuffer():
-    def __init__(self, buffer_limit=buffer_limit):
+    def __init__(self, buffer_limit=10000):
         self.buffer = collections.deque(maxlen=buffer_limit)
 
     def push(self, t):
         states, next_states, dones = [], [], []
         player = t.game_state.players[t.obs.player]
         next_player = t.next_game_state.players[t.next_obs.player]
-        num = len(t.actions)
+        num = len(t.action)
         alive_units = [unit for unit in player.units if unit in next_player.units]
         for unit in player.units:
             states.append(make_input(t.obs, unit.id))
@@ -220,15 +224,15 @@ def get_action(policy, unit, dest):
         act = unit_actions[label]
         pos = unit.pos.translate(act[-1], 1) or unit.pos
         if pos not in dest or in_city(pos):
-            return call_func(unit, *act), pos 
+            return call_func(unit, *act), pos, label 
             
-    return unit.move('c'), unit.pos
+    return unit.move('c'), unit.pos, label
 
-def agent(observation, game_state, model, epsilon, num_action):
+def agent(observation, game_state, model, epsilon, num_action, device):
     
     #game_state = get_game_state(observation)    
     player = game_state.players[observation.player]
-    actions = []
+    actions, labels = [], []
     #width =  observation['width']
     #model = models[width]
     
@@ -256,17 +260,18 @@ def agent(observation, game_state, model, epsilon, num_action):
             else: # exploit
                 state = make_input(observation, unit.id)
                 with torch.no_grad():
-                    p = model(torch.from_numpy(state).unsqueeze(0))
+                    p = model(torch.from_numpy(state).to(device).unsqueeze(0))
 
-                policy = p.squeeze(0).numpy()
+                policy = p.squeeze(0).detach().cpu().numpy()
 
-            action, pos = get_action(policy, unit, dest)
+            action, pos, label = get_action(policy, unit, dest)
             actions.append(action)
             dest.append(pos)
+            labels.append(label)
 
-    return actions
+    return actions, labels
 
-def compute_loss(model, target, states, actions, rewards, next_states, dones):
+def compute_loss(model, target, gamma, states, actions, rewards, next_states, dones):
     
     now_values = model(states).gather(1, actions)
     max_next_values = torch.max(target(next_states),1)[0].detach()[:,None]
@@ -275,17 +280,66 @@ def compute_loss(model, target, states, actions, rewards, next_states, dones):
     
     return loss
 
-def optimize(model, target, memory, optimizer, device):
+def optimize(model, target, memory, optimizer, device, batch_size, gamma):
     '''
     Optimize the model for a sampled batch with a length of `batch_size`
     '''
-    batch = memory.sample(batch_size) 
-    loss = compute_loss(model, target, *batch)
+    batch = memory.sample(batch_size, device) 
+    loss = compute_loss(model, target, gamma, *batch)
     optimizer.zero_grad()
     loss.backward()
     optimizer.step()
     return loss
 
-def compute_epsilon(episode):
+def compute_epsilon(episode, max_epsilon,min_epsilon, epsilon_decay):
     epsilon = min_epsilon + (max_epsilon - min_epsilon) * math.exp(-1. * episode / epsilon_decay)
     return epsilon
+
+class Agent():
+    def __init__(self,device,map_size,model=None,path='../imitation_learning/submission/IL1101_1'):
+        self.model = torch.jit.load(f'{path}/{map_size}.pth') if model is None else model
+        self.device = device
+        self.model.to(device)
+        self.model.eval()
+        self.game_state = Game()
+
+    def get_game_state(self, observation):
+        if observation["step"] == 0:
+            self.game_state._initialize(observation["updates"])
+            self.game_state._update(observation["updates"][2:])
+            self.game_state.id = observation["player"]
+        else:
+            self.game_state._update(observation["updates"])
+
+    def __call__(self,observation,configuration):
+
+        self.get_game_state(observation)    
+        player = self.game_state.players[observation.player]
+        actions = []
+
+        # City Actions
+        unit_count = len(player.units)
+        for city in player.cities.values():
+            for city_tile in city.citytiles:
+                if city_tile.can_act():
+                    if unit_count < player.city_tile_count: 
+                        actions.append(city_tile.build_worker())
+                        unit_count += 1
+                    elif not player.researched_uranium():
+                        actions.append(city_tile.research())
+                        player.research_points += 1
+        
+        # Worker Actions
+        dest = []
+        for unit in player.units:
+            if unit.can_act() and (game_state.turn % 40 < 30 or not in_city(unit.pos)):
+                state = make_input(observation, unit.id)
+                with torch.no_grad():
+                    p = self.model(torch.from_numpy(state).unsqueeze(0))
+
+                policy = p.squeeze(0).numpy()
+                action, pos, labels = get_action(policy, unit, dest)
+                actions.append(action)
+                dest.append(pos)
+
+        return actions
