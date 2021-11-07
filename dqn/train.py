@@ -5,6 +5,7 @@ import numpy as np
 import torch
 from lux.game import Game
 import time, datetime, os, copy
+from teacher_agent.teacher import teacher
 
 CHANNEL = 21
 gamma         = 0.98
@@ -13,6 +14,8 @@ target_update = 20 # episode(s)
 max_epsilon   = 1.0
 min_epsilon   = 0.01
 print_interval= 20
+game_state = Game()
+teacher_model = None
 
 def set_seed(seed=42):
     np.random.seed(seed)
@@ -24,15 +27,61 @@ def set_seed(seed=42):
     torch.backends.cudnn.deterministic = True
 
 
-def get_reward(game_state, obs,alpha=1.0, clip=True, clip_val=1.0):
+def get_reward(obs,alpha=1.0, clip=True, clip_val=1.0):
+    global game_state
     score = lambda p: p.city_tile_count*3 + len(p.units) + p.research_points / 100
     player, opponent = game_state.players[obs["player"]], game_state.players[1-obs["player"]] 
     player_score, opponent_score =  score(player), score(opponent) #+ obs.step / 400
     reward = player_score - alpha*opponent_score
     return np.tanh(reward)*clip_val if clip else reward
 
-def _train(target, model, game_state, agent_teacher, model_path, config,  num_action=5):
+'''
+def agent_teacher(observation,configuration):
+    global game_state, teacher_model
+    if observation["step"] == 0:
+        game_state = Game()
+        game_state._initialize(observation["updates"])
+        game_state._update(observation["updates"][2:])
+        game_state.id = observation["player"]
+        print("teacher",game_state.id)
+    else:
+        game_state._update(observation["updates"])
+    player = game_state.players[observation.player]
+    print("teacher:", observation.player)
+    actions = []
+
+    # City Actions
+    unit_count = len(player.units)
+    for city in player.cities.values():
+        for city_tile in city.citytiles:
+            if city_tile.can_act():
+                if unit_count < player.city_tile_count: 
+                    actions.append(city_tile.build_worker())
+                    unit_count += 1
+                elif not player.researched_uranium():
+                    actions.append(city_tile.research())
+                    player.research_points += 1
+        
+    # Worker Actions
+    dest = []
+    for unit in player.units:
+        if unit.can_act() and (game_state.turn % 40 < 30 or not in_city(unit.pos)):
+            state = make_input(observation, unit.id)
+            with torch.no_grad():
+                p = teacher_model(torch.from_numpy(state).unsqueeze(0))
+
+            policy = p.squeeze(0).numpy()
+            action, pos, labels = get_action(policy, unit, dest)
+            actions.append(action)
+            dest.append(pos)
+
+    return actions'''
+
+
+def _train(target, model, model_path, agent_teacher, config,  num_action=5):
+    global game_state
     # Initial settings
+
     difficulty = config['difficulty']
     map_size = config['map']
     device = config['device']
@@ -42,9 +91,7 @@ def _train(target, model, game_state, agent_teacher, model_path, config,  num_ac
     buffer_limit  = config['buffer_limit']
     train_steps = config['train_steps']
     batch_size = config['batch_size']
-    device = config['device']
     learning_rate = config['lr']
-
 
     # Initialize replay buffer
     memory = ReplayBuffer(buffer_limit)
@@ -54,19 +101,23 @@ def _train(target, model, game_state, agent_teacher, model_path, config,  num_ac
     losses = []
     survivals = []
     optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
-    env = make("lux_ai_2021", configuration={"width": map_size, "height": map_size})
+    env = make("lux_ai_2021", configuration={"width": map_size, "height": map_size,\
+             "loglevel": config['loglevel']}, debug=config['debug'])
     new_env = 'new env'
 
+    best_reward = 0
     for episode in range(max_episodes):
         epsilon = compute_epsilon(episode, max_epsilon,min_epsilon, epsilon_decay)
         # (1-e) chance to generate a new environment 
         # when at exploring stage, it's more likely to explore in the same environment 
-        
+        '''
         if np.random.rand(1) < 1 - 1.5*epsilon: 
-            env = make("lux_ai_2021", configuration={"width": map_size, "height": map_size})
+            env = make("lux_ai_2021", configuration={"width": map_size, "height": map_size,\
+             "loglevel": config['loglevel']}, debug=config['debug'])
             new_env = 'new env'
         else:
             new_env = 'old env'
+            '''
         # initial observation
         env.reset() 
         trainer = env.train([None, agent_teacher])
@@ -79,7 +130,7 @@ def _train(target, model, game_state, agent_teacher, model_path, config,  num_ac
         #player = game_state.players[env.state[0].observation.player]
         #opponent = game_state.players[(env.state[1].observation.player + 1) % 2]
         
-        current_reward = get_reward(game_state,obs, difficulty, clip_val=clip_val)
+        current_reward = get_reward(obs, difficulty, clip_val=clip_val)
         episode_reward = current_reward
 
         for t in range(360): # lux-ai has 360 turns
@@ -97,7 +148,7 @@ def _train(target, model, game_state, agent_teacher, model_path, config,  num_ac
             next_obs_copy = copy.deepcopy(next_obs)
 
             # dedicated reward function
-            next_reward = get_reward(game_state, next_obs, difficulty, clip_val=clip_val)
+            next_reward = get_reward(next_obs, difficulty, clip_val=clip_val)
 
             # Save transition to replay buffer
             memory.push(Transition(game_state_copy, obs_copy, labeled_actions, \
@@ -138,18 +189,32 @@ def _train(target, model, game_state, agent_teacher, model_path, config,  num_ac
             print("[Last {} episodes]\tavg survive: {:.1f} steps,\tavg rewards: {:.3f},\tavg loss: : {:.6f}".format(
                     print_interval, np.mean(survivals[-1*print_interval:]), np.mean(rewards[-1*print_interval:]), np.mean(losses[print_interval*-20:])))
 
-def test(agent, agent_teacher, config):
+        if (episode % print_interval == 0 and episode > 0) and \
+        np.mean(rewards[-1*print_interval:]) > best_reward:
+            traced = torch.jit.trace(model.cpu(), torch.rand(1, CHANNEL, map_size, map_size))
+            traced.save(os.path.join(model_path,'best.pth'))
+            best_reward = np.mean(rewards[-1*print_interval:])
+            model.to(device)
+
+        if episode == max_episodes - 1 or (episode % print_interval == 0 \
+        and episode > 0 and np.mean(rewards[-1*print_interval:]) > 0):
+            traced = torch.jit.trace(model.cpu(), torch.rand(1, CHANNEL, map_size, map_size))
+            traced.save(os.path.join(model_path,'{}.pth'.format(episode)))
+            model.to(device)
+
+
+def test(agent, o, config):
     map_size = config['map']
-    env = make("lux_ai_2021", configuration={"width": map_size, "height": map_size})
-    
+    env = make("lux_ai_2021", configuration={"width": map_size, "height": map_size,\
+     "loglevel": config['loglevel']},debug=config['debug'])
+    win, tie = 0, 0
     for episode in range(config['test_eps']):
-        print(episode)
         env.reset()
-        win, tie = 0, 0
         if np.random.rand(1) < 0.5: 
-            env = make("lux_ai_2021", configuration={"width": map_size, "height": map_size})
-        steps = env.run([agent,agent_teacher])
-        
+            env = make("lux_ai_2021", configuration={"width": map_size, "height": map_size,\
+             "loglevel": config['loglevel']},debug=config['debug'])
+        steps = env.run([agent,o])
+        #print(steps[-1][0]['reward'],steps[-1][1]['reward'])
         if steps[-1][0]['reward'] > steps[-1][1]['reward']:
             win += 1
         elif steps[-1][0]['reward'] == steps[-1][1]['reward']:
@@ -158,6 +223,7 @@ def test(agent, agent_teacher, config):
     return win, tie
 
 def train(config):
+    global teacher_model
 
     device = torch.device(config['device'] if torch.cuda.is_available() else "cpu")
     config['device'] = device
@@ -168,7 +234,7 @@ def train(config):
 
     st = datetime.datetime.fromtimestamp(time.time()).strftime('%Y%m%d%H%M%S')
     model_path = 'model_checkpoints/{}'.format(st)
-    #os.makedirs(model_path)
+    os.makedirs(model_path)
 
     # Initialize model and target network
     map_size = config['map']
@@ -185,16 +251,22 @@ def train(config):
         for i, param in enumerate(model.parameters()):
             if i < 26: # transfer learning on last 3 layers
                 param.requires_grad = False
+    
+    #path = '../imitation_learning/submission/IL1101_1'
+    #teacher_model = torch.jit.load(f'{path}/{map_size}.pth').to(device)
 
-    game_state = Game()
-    agent_teacher = Agent(device,config['map'])
-    _train(target, model, game_state, agent_teacher, model_path, config=config)
+    agent_teacher_ = Agent(device,config['map'])
+    _train(target, model, model_path, agent_teacher_, config=config)
 
     # test
     print('Testing...')
-    opponents = [agent_teacher,"simple_agent"]
+    opponents = [agent_teacher_,"simple_agent"]
+    if os.path.exists(os.path.join(model_path,'best.pth')):
+        model = torch.jit.load(os.path.join(model_path,'best.pth')).to(device)
+
     agent = Agent(device,config['map'],model=model)
+
     for i,o in enumerate(opponents):
         win, tie = test(agent, o, config)
-        print("[Test {}]\tRound: {},\tWin: {},\tTie: {}\t,Win Rate: {:.2f}%"\
+        print("[Test {}]\tRound: {},\tWin: {},\tTie: {},\tWin Rate: {:.2f}%"\
         .format(i,config['test_eps'],win,tie,100*win/(config['test_eps']-tie)))

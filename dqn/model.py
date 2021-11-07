@@ -207,7 +207,8 @@ def act(input, epsilon=0.0):
     else:
         return torch.argmax(self.forward(input)).item()
 
-def in_city(pos):    
+def in_city(pos,game_state):    
+    
     try:
         city = game_state.map.get_cell_by_pos(pos).citytile
         return city is not None and city.team == game_state.id
@@ -215,16 +216,34 @@ def in_city(pos):
         return False
 
 
+def invalid_pos(pos, game_state):
+    try:
+        map_size = game_state.map_width
+        city = game_state.map.get_cell_by_pos(pos).citytile
+        return (city is not None and city.team != game_state.id) or \
+        pos.x < 0 or pos.x >= map_size or pos.y < 0 or pos.y >= map_size
+    except:
+        return True   
+        
+    
+
+
 def call_func(obj, method, args=[]):
     return getattr(obj, method)(*args)
 
 unit_actions = [('move', 'n'), ('move', 's'), ('move', 'w'), ('move', 'e'), ('build_city',)]
-def get_action(policy, unit, dest):
+def get_action(policy, unit, dest, width, valid, game_state):
     for label in np.argsort(policy)[::-1]:
         act = unit_actions[label]
         pos = unit.pos.translate(act[-1], 1) or unit.pos
-        if pos not in dest or in_city(pos):
-            return call_func(unit, *act), pos, label 
+        if valid:
+            if label == 4 and unit.can_build(game_state.map):
+                return call_func(unit, *act), pos, label 
+            if (pos not in dest or in_city(pos,game_state)) and not invalid_pos(pos,game_state):
+                return call_func(unit, *act), pos, label 
+        else:
+            if pos not in dest or in_city(pos,game_state):
+                return call_func(unit, *act), pos, label           
             
     return unit.move('c'), unit.pos, label
 
@@ -233,7 +252,7 @@ def agent(observation, game_state, model, epsilon, num_action, device):
     #game_state = get_game_state(observation)    
     player = game_state.players[observation.player]
     actions, labels = [], []
-    #width =  observation['width']
+    width =  observation['width']
     #model = models[width]
     
     # City Actions
@@ -251,11 +270,11 @@ def agent(observation, game_state, model, epsilon, num_action, device):
     # Worker Actions
     dest = []
     for unit in player.units:
-        if unit.can_act() and (game_state.turn % 40 < 30 or not in_city(unit.pos)):
+        if unit.can_act() and (game_state.turn % 40 < 30 or not in_city(unit.pos,game_state)):
             
             # with probability epsilon to select a random action (explore)
             if random.random() < epsilon:
-                policy = random.shuffle([i for i in range(num_action)])
+                policy = np.random.rand(num_action)
 
             else: # exploit
                 state = make_input(observation, unit.id)
@@ -263,8 +282,7 @@ def agent(observation, game_state, model, epsilon, num_action, device):
                     p = model(torch.from_numpy(state).to(device).unsqueeze(0))
 
                 policy = p.squeeze(0).detach().cpu().numpy()
-
-            action, pos, label = get_action(policy, unit, dest)
+            action, pos, label = get_action(policy, unit, dest, width, True, game_state)
             actions.append(action)
             dest.append(pos)
             labels.append(label)
@@ -296,12 +314,13 @@ def compute_epsilon(episode, max_epsilon,min_epsilon, epsilon_decay):
     return epsilon
 
 class Agent():
-    def __init__(self,device,map_size,model=None,path='../imitation_learning/submission/IL1101_1'):
+    def __init__(self,device,map_size,valid=True,model=None,path='../imitation_learning/submission/IL1104'):
         self.model = torch.jit.load(f'{path}/{map_size}.pth') if model is None else model
         self.device = device
         self.model.to(device)
         self.model.eval()
         self.game_state = Game()
+        self.valid = valid        
 
     def get_game_state(self, observation):
         if observation["step"] == 0:
@@ -312,11 +331,12 @@ class Agent():
             self.game_state._update(observation["updates"])
 
     def __call__(self,observation,configuration):
-
+        width =  observation['width']
         self.get_game_state(observation)    
         player = self.game_state.players[observation.player]
         actions = []
-
+       # print("Agent:",self.game_state.id)
+        #print("teacher!!!", observation.player)
         # City Actions
         unit_count = len(player.units)
         for city in player.cities.values():
@@ -332,13 +352,13 @@ class Agent():
         # Worker Actions
         dest = []
         for unit in player.units:
-            if unit.can_act() and (game_state.turn % 40 < 30 or not in_city(unit.pos)):
+            if unit.can_act() and (self.game_state.turn % 40 < 30 or not in_city(unit.pos, self.game_state)):
                 state = make_input(observation, unit.id)
                 with torch.no_grad():
-                    p = self.model(torch.from_numpy(state).unsqueeze(0))
+                    p = self.model(torch.from_numpy(state).to(self.device).unsqueeze(0))
 
-                policy = p.squeeze(0).numpy()
-                action, pos, labels = get_action(policy, unit, dest)
+                policy = p.squeeze(0).detach().cpu().numpy()
+                action, pos, labels = get_action(policy, unit, dest, width, self.valid, self.game_state)
                 actions.append(action)
                 dest.append(pos)
 

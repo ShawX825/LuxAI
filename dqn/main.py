@@ -18,6 +18,9 @@ def parse_arg():
     parser.add_argument('--max_eps',type=int, default=200)
     parser.add_argument('--test_eps',type=int, default=10)
     parser.add_argument('--difficulty',type=float, default=0.5)
+    parser.add_argument('--debug',type=bool, default=False)
+    parser.add_argument('--loglevel',type=int, default=0)
+
 
     args = parser.parse_args()
 
