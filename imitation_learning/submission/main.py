@@ -110,16 +110,6 @@ def in_city(pos):
     except:
         return False
 
-def invalid_pos(pos):
-    try:
-        map_size = game_state.map.map_width
-        city = game_state.map.get_cell_by_pos(pos).citytile
-        return (city is not None and city.team != game_state.id) or \
-        pos.x < 0 or pos.x >= map_size or pos.y < 0 or pos.y >= map_size
-    except:
-        return True
-
-
 
 def call_func(obj, method, args=[]):
     return getattr(obj, method)(*args)
@@ -129,9 +119,7 @@ def get_action(policy, unit, dest):
     for label in np.argsort(policy)[::-1]:
         act = unit_actions[label]
         pos = unit.pos.translate(act[-1], 1) or unit.pos
-        # if pos not in dest or in_city(pos)
-        if ((label == 4 and unit.can_build(game_state.map)) or \
-        pos not in dest or in_city(pos)) and not invalid_pos(pos,game_state):
+        if pos not in dest or in_city(pos)
             return call_func(unit, *act), pos 
             
     return unit.move('c'), unit.pos
