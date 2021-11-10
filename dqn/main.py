@@ -20,14 +20,13 @@ def parse_arg():
     parser.add_argument('--difficulty',type=float, default=0.5)
     parser.add_argument('--debug',type=bool, default=False)
     parser.add_argument('--loglevel',type=int, default=0)
+    parser.add_argument('--transfer',type=int, default=3)
 
 
     args = parser.parse_args()
 
     return args
     
-
-
 def main(config):
     train(config)
     

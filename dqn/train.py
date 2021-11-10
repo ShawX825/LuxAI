@@ -35,49 +35,6 @@ def get_reward(obs,alpha=1.0, clip=True, clip_val=1.0):
     reward = player_score - alpha*opponent_score
     return np.tanh(reward)*clip_val if clip else reward
 
-'''
-def agent_teacher(observation,configuration):
-    global game_state, teacher_model
-    if observation["step"] == 0:
-        game_state = Game()
-        game_state._initialize(observation["updates"])
-        game_state._update(observation["updates"][2:])
-        game_state.id = observation["player"]
-        print("teacher",game_state.id)
-    else:
-        game_state._update(observation["updates"])
-    player = game_state.players[observation.player]
-    print("teacher:", observation.player)
-    actions = []
-
-    # City Actions
-    unit_count = len(player.units)
-    for city in player.cities.values():
-        for city_tile in city.citytiles:
-            if city_tile.can_act():
-                if unit_count < player.city_tile_count: 
-                    actions.append(city_tile.build_worker())
-                    unit_count += 1
-                elif not player.researched_uranium():
-                    actions.append(city_tile.research())
-                    player.research_points += 1
-        
-    # Worker Actions
-    dest = []
-    for unit in player.units:
-        if unit.can_act() and (game_state.turn % 40 < 30 or not in_city(unit.pos)):
-            state = make_input(observation, unit.id)
-            with torch.no_grad():
-                p = teacher_model(torch.from_numpy(state).unsqueeze(0))
-
-            policy = p.squeeze(0).numpy()
-            action, pos, labels = get_action(policy, unit, dest)
-            actions.append(action)
-            dest.append(pos)
-
-    return actions'''
-
-
 def _train(target, model, model_path, agent_teacher, config,  num_action=5):
     global game_state
     # Initial settings
@@ -170,9 +127,6 @@ def _train(target, model, model_path, agent_teacher, config,  num_action=5):
         # Train the model if memory is sufficient
         episode_losses = 0
         if len(memory) > min_buffer:
-            #if np.mean(rewards[20:]) < -3:
-            #    print('Bad initialization. Please restart the training.')
-            #    exit()
             for i in range(train_steps):
                 loss = optimize(model, target, memory, optimizer, device, batch_size,  gamma)
                 episode_losses += loss.item()
@@ -223,14 +177,14 @@ def test(agent, o, config):
     return win, tie
 
 def train(config):
-    global teacher_model
+    #global teacher_model
 
     device = torch.device(config['device'] if torch.cuda.is_available() else "cpu")
     config['device'] = device
     print('using ', device)
 
     set_seed()
-    pre_trained = '../imitation_learning/model_checkpoints/IL_OPT3_12/best_acc.pth'
+    pre_trained = '../imitation_learning/submission/IL1104/{}.pt'.format(config['map'])
 
     st = datetime.datetime.fromtimestamp(time.time()).strftime('%Y%m%d%H%M%S')
     model_path = 'model_checkpoints/{}'.format(st)
@@ -243,22 +197,25 @@ def train(config):
     target.load_state_dict(model.state_dict())
     target.eval()
 
+    # Load pretrained model if available
     if pre_trained:
         pretrained_model = torch.jit.load(pre_trained)
         model.load_state_dict(pretrained_model.state_dict())
         target.load_state_dict(pretrained_model.state_dict())
         target.eval()
+        depth = len(list(pretrained_model.parameters())) # including bias
         for i, param in enumerate(model.parameters()):
-            if i < 26: # transfer learning on last 3 layers
+            if i < (depth - config['transfer'] * 2): # transfer learning on last 3 layers
                 param.requires_grad = False
     
     #path = '../imitation_learning/submission/IL1101_1'
     #teacher_model = torch.jit.load(f'{path}/{map_size}.pth').to(device)
 
+    # Initialize agent teacher, can be substituted by "simple_agent"
     agent_teacher_ = Agent(device,config['map'])
     _train(target, model, model_path, agent_teacher_, config=config)
 
-    # test
+    # win-rate test
     print('Testing...')
     opponents = [agent_teacher_,"simple_agent"]
     if os.path.exists(os.path.join(model_path,'best.pth')):

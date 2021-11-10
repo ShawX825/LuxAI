@@ -269,11 +269,12 @@ def agent(observation, game_state, model, epsilon, num_action, device):
     
     # Worker Actions
     dest = []
+    e = np.random.rand(1) 
     for unit in player.units:
         if unit.can_act() and (game_state.turn % 40 < 30 or not in_city(unit.pos,game_state)):
             
             # with probability epsilon to select a random action (explore)
-            if random.random() < epsilon:
+            if e < epsilon:
                 policy = np.random.rand(num_action)
 
             else: # exploit
@@ -282,7 +283,7 @@ def agent(observation, game_state, model, epsilon, num_action, device):
                     p = model(torch.from_numpy(state).to(device).unsqueeze(0))
 
                 policy = p.squeeze(0).detach().cpu().numpy()
-            action, pos, label = get_action(policy, unit, dest, width, True, game_state)
+            action, pos, label = get_action(policy, unit, dest, width, False, game_state)
             actions.append(action)
             dest.append(pos)
             labels.append(label)
@@ -314,7 +315,7 @@ def compute_epsilon(episode, max_epsilon,min_epsilon, epsilon_decay):
     return epsilon
 
 class Agent():
-    def __init__(self,device,map_size,valid=True,model=None,path='../imitation_learning/submission/IL1104'):
+    def __init__(self,device,map_size,valid=False,model=None,path='../imitation_learning/submission/IL1104'):
         self.model = torch.jit.load(f'{path}/{map_size}.pth') if model is None else model
         self.device = device
         self.model.to(device)
