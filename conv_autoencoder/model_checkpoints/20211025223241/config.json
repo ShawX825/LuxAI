@@ -1,0 +1,1 @@
+{"batch_size": 64, "lr": 0.001, "epoch": 2, "save_every": 5, "load_prop": 0.01, "load_last_ckpt": false, "last_ckpt_dir": null}
