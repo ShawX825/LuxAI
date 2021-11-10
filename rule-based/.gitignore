@@ -1,0 +1,22 @@
+# OS
+.DS_Store
+
+# datafiles
+*.tar.gz
+*.pyc
+*.pkl
+
+# notebooks
+.ipynb_checkpoints/
+*.ipynb
+
+!notebook_test.ipynb
+!notebook_debug.ipynb
+
+# reference bots
+ref/
+
+# replays
+errorlogs/
+replays/
+game_play.json
