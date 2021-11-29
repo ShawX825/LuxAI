@@ -1,4 +1,4 @@
 - One example of self-playing replay:
 
-  <video src="../video/IL_Trim.mp4"></video>
+  <video src="https://github.com/ShawX825/LuxAI/edit/main/video/IL_Trim.mp4"></video>
 
