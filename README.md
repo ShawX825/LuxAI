@@ -9,4 +9,5 @@
 - To submit via kaggle API, you need to ensure your API token file exists in `~/.kaggle/kaggle.json`. Then run command:
   - ```kaggle competitions submit -c lux-ai-2021 -f FILE_NAME -m MESSAGE```
 
-- Experiments for Imitation Learning and DQN are conducted with Python 3.7, PyTorch 1.7, CUDA 11.0, kaggle-enviroments 1.8.12, gym 0.19.0, 
+- Experiments for Imitation Learning and DQN are conducted with Python 3.7, PyTorch 1.7, CUDA 11.0, kaggle-enviroments 1.8.12, gym 0.19.0.
+- Visualization of self-playing replays of PPO and IL are shown in `video/ppo_Trim.mp4` and `video/IL_Trim.mp4`.
